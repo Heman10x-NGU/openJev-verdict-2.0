@@ -1,0 +1,173 @@
+{
+  "experiment": "E6_contamination_audit",
+  "methodology": "character_5gram_jaccard_similarity",
+  "train_samples": 2300,
+  "test_samples": 1000,
+  "threshold_counts": {
+    "ge_0_7": 15,
+    "ge_0_8": 3,
+    "ge_0_9": 0,
+    "exact_match_1_0": 0
+  },
+  "top_20_paraphrase_pairs": [
+    {
+      "test_id": "test_in_00661",
+      "test_text": "top up did not complete",
+      "train_id": "tr_in_01267",
+      "train_text": "My top up did not complete.",
+      "jaccard_5gram": 0.8260869565217391
+    },
+    {
+      "test_id": "test_in_00271",
+      "test_text": "Can I exchange currencies?",
+      "train_id": "tr_in_01695",
+      "train_text": "how can i exchange currencies",
+      "jaccard_5gram": 0.8076923076923077
+    },
+    {
+      "test_id": "test_in_00516",
+      "test_text": "How old does my kids need to be to open an account?",
+      "train_id": "tr_in_01055",
+      "train_text": "How old do my kids need to be to open an account?",
+      "jaccard_5gram": 0.803921568627451
+    },
+    {
+      "test_id": "test_in_00072",
+      "test_text": "Can I reactivate a card I thought I lost?",
+      "train_id": "tr_mo_00108",
+      "train_text": "How do I reactivate a card I thought I lost?",
+      "jaccard_5gram": 0.7906976744186046
+    },
+    {
+      "test_id": "test_in_00256",
+      "test_text": "What fiat currencies are supported for holding and exchange?",
+      "train_id": "tr_in_00150",
+      "train_text": "Which fiat currencies are supported for holding and exchanging?",
+      "jaccard_5gram": 0.7692307692307693
+    },
+    {
+      "test_id": "test_in_00119",
+      "test_text": "What is the current exchange rate for me?",
+      "train_id": "tr_in_00286",
+      "train_text": "What is the current exchange rate?",
+      "jaccard_5gram": 0.7631578947368421
+    },
+    {
+      "test_id": "test_in_00489",
+      "test_text": "Can my daughter open an account?",
+      "train_id": "tr_in_00656",
+      "train_text": "Could my daughter open an account?",
+      "jaccard_5gram": 0.7575757575757576
+    },
+    {
+      "test_id": "test_in_00266",
+      "test_text": "Which fiat currencies do you support?",
+      "train_id": "tr_in_00412",
+      "train_text": "What fiat currencies do you support?",
+      "jaccard_5gram": 0.7567567567567568
+    },
+    {
+      "test_id": "test_in_00511",
+      "test_text": "How old do I need to be to open an account?",
+      "train_id": "tr_in_00812",
+      "train_text": "How old do you need to be to open an account?",
+      "jaccard_5gram": 0.7391304347826086
+    },
+    {
+      "test_id": "test_in_00230",
+      "test_text": "Cash withdrawal still pending?",
+      "train_id": "tr_in_00839",
+      "train_text": "Why is my cash withdrawal still pending?",
+      "jaccard_5gram": 0.7222222222222222
+    },
+    {
+      "test_id": "test_in_00208",
+      "test_text": "Why is my withdrawal still pending?",
+      "train_id": "tr_in_00839",
+      "train_text": "Why is my cash withdrawal still pending?",
+      "jaccard_5gram": 0.717948717948718
+    },
+    {
+      "test_id": "test_in_00710",
+      "test_text": "My transaction needs to be canceled.",
+      "train_id": "tr_in_01863",
+      "train_text": "My morning transaction needs to be canceled.",
+      "jaccard_5gram": 0.7142857142857143
+    },
+    {
+      "test_id": "test_in_00101",
+      "test_text": "What exchange rate do you use?",
+      "train_id": "tr_in_01957",
+      "train_text": "What exchange rates do you use?",
+      "jaccard_5gram": 0.7096774193548387
+    },
+    {
+      "test_id": "test_in_00361",
+      "test_text": "I can't get my card to work.",
+      "train_id": "tr_in_00114",
+      "train_text": "Currently I can't get my card to work.",
+      "jaccard_5gram": 0.7058823529411765
+    },
+    {
+      "test_id": "test_in_00242",
+      "test_text": "Do you support all fiat currencies?",
+      "train_id": "tr_in_01144",
+      "train_text": "Do you support fiat currencies?",
+      "jaccard_5gram": 0.7058823529411765
+    },
+    {
+      "test_id": "test_in_00081",
+      "test_text": "What exchange rates do you offer?",
+      "train_id": "tr_in_01957",
+      "train_text": "What exchange rates do you use?",
+      "jaccard_5gram": 0.696969696969697
+    },
+    {
+      "test_id": "test_in_00226",
+      "test_text": "My cash withdrawal is still showing as pending.",
+      "train_id": "tr_in_00037",
+      "train_text": "My cash withdrawal is showing as pending, why?",
+      "jaccard_5gram": 0.6666666666666666
+    },
+    {
+      "test_id": "test_in_00244",
+      "test_text": "What currencies can I hold money in?",
+      "train_id": "tr_in_00126",
+      "train_text": "What currencies can I hold?",
+      "jaccard_5gram": 0.6666666666666666
+    },
+    {
+      "test_id": "test_in_00032",
+      "test_text": "How do I know when my card will arrive?",
+      "train_id": "tr_in_01838",
+      "train_text": "How do I know when my card will expire?",
+      "jaccard_5gram": 0.6666666666666666
+    },
+    {
+      "test_id": "test_in_00677",
+      "test_text": "When will my top-up process?",
+      "train_id": "tr_mo_00172",
+      "train_text": "When will my top up process?",
+      "jaccard_5gram": 0.6551724137931034
+    }
+  ],
+  "full_test_metrics": {
+    "samples": 1000,
+    "accuracy": 0.95,
+    "nll": 0.17684410512447357,
+    "brier": 0.0785319060087204,
+    "ece": 0.033534431338310244
+  },
+  "decontaminated_test_metrics": {
+    "samples": 997,
+    "accuracy": 0.950852557673019,
+    "nll": 0.17510317265987396,
+    "brier": 0.07758451998233795,
+    "ece": 0.03312349445004401
+  },
+  "delta": {
+    "accuracy": 0.0008525576730190609,
+    "brier": -0.0009473860263824463,
+    "ece": -0.00041093688826623204
+  }
+}

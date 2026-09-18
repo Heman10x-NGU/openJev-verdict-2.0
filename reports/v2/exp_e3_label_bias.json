@@ -1,0 +1,23 @@
+{
+  "experiment": "E3_label_length_and_glossary_bias",
+  "total_test_records": 1000,
+  "curated_categories_count": 53,
+  "templated_categories_count": 24,
+  "curated_gold_samples": 720,
+  "templated_gold_samples": 280,
+  "accuracy_by_glossary_status": {
+    "curated_accuracy": 0.9430555555555555,
+    "templated_accuracy": 0.9678571428571429,
+    "gap": -0.024801587301587324
+  },
+  "length_probability_correlation": {
+    "pearson_r": 0.10267505058939763,
+    "spearman_rho": -0.12632192598087705,
+    "mean_token_length": 11.815,
+    "std_token_length": 5.434995400182046
+  },
+  "uniform_glossary_rerun": {
+    "uniform_accuracy": 0.93,
+    "delta_from_standard": -0.019999999999999907
+  }
+}

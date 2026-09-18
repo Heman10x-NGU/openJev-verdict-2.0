@@ -1,0 +1,31 @@
+# python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# model runs: weights are large; keep eval results and training logs (for the plot)
+runs/*
+!runs/kev/
+runs/kev/*
+!runs/kev/eval.json
+!runs/logs/
+runs/logs/*
+!runs/logs/train_*.log
+
+# logs elsewhere
+*.log
+!runs/logs/train_*.log
+
+# os
+.DS_Store
+
+# research results: keep reports and comparisons, not raw prediction dumps
+!runs/research-kev-v01/
+runs/research-kev-v01/*
+!runs/research-kev-v01/report.json
+!runs/research-jev-v1/
+runs/research-jev-v1/*
+!runs/research-jev-v1/report.json
+!runs/research-jev-v1/usage.json
+!runs/kev-vs-jev-v1.json

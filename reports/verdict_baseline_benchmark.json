@@ -1,0 +1,26 @@
+{
+  "model": "Verdict-OpenJev-151M",
+  "benchmark": "LocalLLaMA/typed-decisions",
+  "split": "test",
+  "device": "mps",
+  "total_cases": 10,
+  "total_questions": 50,
+  "total_eval_seconds": 1.5,
+  "metrics": {
+    "accuracy": 0.22,
+    "soft_accuracy": 0.3024,
+    "brier_score": 0.4037,
+    "ece": 0.4047,
+    "score_mae": 1.0496,
+    "within_one_level": 0.6,
+    "latency_p50_ms": 139.79,
+    "latency_p95_ms": 198.62
+  },
+  "workflows": {
+    "agent_trace_observability": {
+      "cases": 10,
+      "questions": 50,
+      "accuracy": 0.22
+    }
+  }
+}

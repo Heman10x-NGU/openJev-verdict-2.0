@@ -1,0 +1,8 @@
+{
+  "model_id": "verdict-open-jev-modernbert-151.4m",
+  "temperature": 1.9453240633010864,
+  "log_temperature": 0.6654285788536072,
+  "scope": "restricted_5_candidate_selection",
+  "artifact_hash": "e6a13d7ebffc39050d5e8687a4192b02fc922262d4e8bb43586ab32605ad2ea8",
+  "format_version": "rlcd-calibrator-v1"
+}

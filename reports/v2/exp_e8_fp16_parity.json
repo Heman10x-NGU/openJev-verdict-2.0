@@ -1,0 +1,211 @@
+{
+  "experiment": "E8_fp16_parity",
+  "fp32_file": "model.onnx",
+  "fp16_file": "model_fp16.onnx",
+  "max_accuracy_delta": 0.0,
+  "parity_threshold": 0.005,
+  "parity_maintained": true,
+  "recommendation": "ship_fp16",
+  "comparisons": {
+    "held_out_test": {
+      "samples": 1000,
+      "fp32": {
+        "samples": 1000,
+        "accuracy": 0.945,
+        "nll": 0.17544884979724884,
+        "brier": 0.07969792187213898,
+        "ece": 0.009470142990350724,
+        "abstention_recall": 0.96
+      },
+      "fp16": {
+        "samples": 1000,
+        "accuracy": 0.945,
+        "nll": 0.17559589445590973,
+        "brier": 0.07976457476615906,
+        "ece": 0.00943158745765686,
+        "abstention_recall": 0.96
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": 0.00014704465866088867,
+        "brier": 6.665289402008057e-05,
+        "ece": -3.855553269386386e-05
+      }
+    },
+    "missing_option": {
+      "samples": 200,
+      "fp32": {
+        "samples": 200,
+        "accuracy": 0.745,
+        "nll": 0.7803360819816589,
+        "brier": 0.39804908633232117,
+        "ece": 0.13200736939907073,
+        "abstention_recall": 0.745
+      },
+      "fp16": {
+        "samples": 200,
+        "accuracy": 0.745,
+        "nll": 0.7792742252349854,
+        "brier": 0.3976852297782898,
+        "ece": 0.1290560306608677,
+        "abstention_recall": 0.745
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": -0.001061856746673584,
+        "brier": -0.00036385655403137207,
+        "ece": -0.0029513387382030243
+      }
+    },
+    "distant_oos": {
+      "samples": 200,
+      "fp32": {
+        "samples": 200,
+        "accuracy": 0.98,
+        "nll": 0.07524876296520233,
+        "brier": 0.03895966708660126,
+        "ece": 0.013164184391498565,
+        "abstention_recall": 0.98
+      },
+      "fp16": {
+        "samples": 200,
+        "accuracy": 0.98,
+        "nll": 0.07498617470264435,
+        "brier": 0.038833267986774445,
+        "ece": 0.01311129093170166,
+        "abstention_recall": 0.98
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": -0.0002625882625579834,
+        "brier": -0.00012639909982681274,
+        "ece": -5.289345979690545e-05
+      }
+    },
+    "cardinality_k3": {
+      "samples": 100,
+      "fp32": {
+        "samples": 100,
+        "accuracy": 0.97,
+        "nll": 0.12084653973579407,
+        "brier": 0.043656252324581146,
+        "ece": 0.04085949927568436,
+        "abstention_recall": 0.0
+      },
+      "fp16": {
+        "samples": 100,
+        "accuracy": 0.97,
+        "nll": 0.12113672494888306,
+        "brier": 0.043707795441150665,
+        "ece": 0.0409891015291214,
+        "abstention_recall": 0.0
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": 0.00029018521308898926,
+        "brier": 5.154311656951904e-05,
+        "ece": 0.00012960225343704168
+      }
+    },
+    "cardinality_k5": {
+      "samples": 100,
+      "fp32": {
+        "samples": 100,
+        "accuracy": 0.96,
+        "nll": 0.19249649345874786,
+        "brier": 0.08740664273500443,
+        "ece": 0.05976981878280639,
+        "abstention_recall": 0.0
+      },
+      "fp16": {
+        "samples": 100,
+        "accuracy": 0.96,
+        "nll": 0.19254545867443085,
+        "brier": 0.08749937266111374,
+        "ece": 0.059827319979667656,
+        "abstention_recall": 0.0
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": 4.89652156829834e-05,
+        "brier": 9.272992610931396e-05,
+        "ece": 5.750119686126487e-05
+      }
+    },
+    "cardinality_k9": {
+      "samples": 100,
+      "fp32": {
+        "samples": 100,
+        "accuracy": 0.9,
+        "nll": 0.27971014380455017,
+        "brier": 0.14695210754871368,
+        "ece": 0.058532670140266425,
+        "abstention_recall": 0.0
+      },
+      "fp16": {
+        "samples": 100,
+        "accuracy": 0.9,
+        "nll": 0.2799223065376282,
+        "brier": 0.14695952832698822,
+        "ece": 0.05867509245872499,
+        "abstention_recall": 0.0
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": 0.00021216273307800293,
+        "brier": 7.420778274536133e-06,
+        "ece": 0.0001424223184585613
+      }
+    },
+    "cardinality_k17": {
+      "samples": 100,
+      "fp32": {
+        "samples": 100,
+        "accuracy": 0.78,
+        "nll": 0.7055165767669678,
+        "brier": 0.3389874994754791,
+        "ece": 0.0893778544664383,
+        "abstention_recall": 0.0
+      },
+      "fp16": {
+        "samples": 100,
+        "accuracy": 0.78,
+        "nll": 0.7051217555999756,
+        "brier": 0.3389342427253723,
+        "ece": 0.08936498939990997,
+        "abstention_recall": 0.0
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": -0.0003948211669921875,
+        "brier": -5.3256750106811523e-05,
+        "ece": -1.2865066528325309e-05
+      }
+    },
+    "cardinality_k25": {
+      "samples": 100,
+      "fp32": {
+        "samples": 100,
+        "accuracy": 0.71,
+        "nll": 0.901165246963501,
+        "brier": 0.38639888167381287,
+        "ece": 0.08266927614808083,
+        "abstention_recall": 0.0
+      },
+      "fp16": {
+        "samples": 100,
+        "accuracy": 0.71,
+        "nll": 0.9000646471977234,
+        "brier": 0.38612130284309387,
+        "ece": 0.08306648790836335,
+        "abstention_recall": 0.0
+      },
+      "delta": {
+        "accuracy": 0.0,
+        "nll": -0.0011005997657775879,
+        "brier": -0.00027757883071899414,
+        "ece": 0.0003972117602825259
+      }
+    }
+  }
+}

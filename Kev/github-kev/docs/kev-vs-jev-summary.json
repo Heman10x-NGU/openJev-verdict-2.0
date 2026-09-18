@@ -1,0 +1,161 @@
+{
+  "status": "preliminary baseline snapshot",
+  "suite": "evals/decision-v1/development.jsonl",
+  "suite_sha256": "f9373760e475d3a06753524b92baafc57a9c51403879136c9fea1ac73ed8acdd",
+  "inputs": {
+    "kev_report": {
+      "path": "/Users/jared/dev/kev/runs/research-kev-v01/report.json",
+      "sha256": "5ebeb05dd9637fb1ce90c186c1a862d3057141d3ef2456f9f6900c5bdac7dfb9"
+    },
+    "jev_report": {
+      "path": "/Users/jared/dev/kev/runs/research-jev-v1/report.json",
+      "sha256": "daff10c3e8d2dc6e6b916ad1243aed6a90d9f883b70153abb81e2b1f37ba944f"
+    },
+    "kev_rows": {
+      "path": "/Users/jared/dev/kev/runs/research-kev-v01/rows.json",
+      "sha256": "eaed3d21f0357693a33fe17fd43e6a220d3a4cd2688d81169e28ff4c56f2d6a4"
+    },
+    "jev_rows": {
+      "path": "/Users/jared/dev/kev/runs/research-jev-v1/rows.json",
+      "sha256": "4296ac36e4544e5b2e1c1886716c5e49bb73eefa6db28f72fa3fcfebd84eb88d"
+    },
+    "comparison": {
+      "path": "/Users/jared/dev/kev/runs/kev-vs-jev-v1.json",
+      "sha256": "4ef7d5de8311520b9cc9e892cfadf67cdffd41419ec7e43a100f9d848c860ee6"
+    }
+  },
+  "models": {
+    "kev": "Original released Qwen2.5-0.5B + LoRA checkpoint",
+    "jev": {
+      "model": "typesafe-ai/jev",
+      "model_revision": "Gateway alias; provider revision not exposed by SDK result",
+      "started_at": "2026-09-18T20:43:26.491029+00:00",
+      "calls": 588,
+      "input_tokens": 363696,
+      "output_tokens": 116079,
+      "listed_input_usd_per_million": 0.042,
+      "estimated_usd": 0.015275232000000001,
+      "budget_usd": 0.1,
+      "sdk": "ai@7.0.105",
+      "zero_data_retention_requested": true
+    }
+  },
+  "coverage_per_model": {
+    "requested_records": 588,
+    "requested_questions": 852,
+    "evaluated_records": 588,
+    "evaluated_questions": 852,
+    "rejected_records": 0,
+    "truncated_records": 0
+  },
+  "clean_records": 480,
+  "clean_questions": 720,
+  "tasks": [
+    {
+      "task": "agnews",
+      "label": "AG News",
+      "questions": 80,
+      "kev_accuracy": 0.9125,
+      "jev_accuracy": 0.8125
+    },
+    {
+      "task": "agnews_yn",
+      "label": "AG News \u00b7 Yes/no",
+      "questions": 160,
+      "kev_accuracy": 0.925,
+      "jev_accuracy": 0.90625
+    },
+    {
+      "task": "banking77",
+      "label": "Banking77",
+      "questions": 80,
+      "kev_accuracy": 0.8,
+      "jev_accuracy": 0.8375
+    },
+    {
+      "task": "boolq",
+      "label": "BoolQ",
+      "questions": 80,
+      "kev_accuracy": 0.7875,
+      "jev_accuracy": 0.925
+    },
+    {
+      "task": "mnli",
+      "label": "MNLI",
+      "questions": 80,
+      "kev_accuracy": 0.775,
+      "jev_accuracy": 0.825
+    },
+    {
+      "task": "sst5",
+      "label": "SST-5 \u00b7 Score",
+      "questions": 80,
+      "kev_accuracy": 0.575,
+      "jev_accuracy": 0.6125
+    },
+    {
+      "task": "yelp",
+      "label": "Yelp \u00b7 Score",
+      "questions": 80,
+      "kev_accuracy": 0.6125,
+      "jev_accuracy": 0.65
+    },
+    {
+      "task": "yelp_yn",
+      "label": "Yelp \u00b7 Yes/no",
+      "questions": 80,
+      "kev_accuracy": 0.8625,
+      "jev_accuracy": 0.825
+    }
+  ],
+  "macro_accuracy": {
+    "kev": 0.78125,
+    "jev": 0.7992187500000001
+  },
+  "macro_accuracy_difference": {
+    "direction": "kev minus Jev",
+    "fraction": -0.01796875000000009,
+    "percentage_points": -1.7968750000000089,
+    "ci95_fraction": [
+      -0.05468749999999999,
+      0.017207031249999984
+    ],
+    "ci95_percentage_points": [
+      -5.468749999999999,
+      1.7207031249999984
+    ],
+    "bootstrap_samples": 1000,
+    "bootstrap_unit": "source-stratified original record; sibling questions stay together",
+    "interval_source": "/Users/jared/dev/kev/runs/kev-vs-jev-v1.json"
+  },
+  "micro_accuracy": {
+    "kev": 0.7972222222222223,
+    "jev": 0.8111111111111111
+  },
+  "micro_accuracy_difference_percentage_points": -1.388888888888884,
+  "nll_floor_sensitivity_not_plotted": {
+    "0.001": {
+      "candidate_macro_nll": 0.6551909754180831,
+      "reference_macro_nll": 0.647295374831794
+    },
+    "1e-06": {
+      "candidate_macro_nll": 0.658603515975331,
+      "reference_macro_nll": 0.830782624429757
+    },
+    "1e-09": {
+      "candidate_macro_nll": 0.658603515975331,
+      "reference_macro_nll": 1.01426987402772
+    }
+  },
+  "caveats": [
+    "Preliminary baseline snapshot on the frozen development suite; not a final model-selection claim.",
+    "Locked final test has not been evaluated.",
+    "Original kev checkpoint was fine-tuned on all six sources; Jev training exposure is unknown.",
+    "This is neither an out-of-domain equivalence claim nor a fair architecture ablation.",
+    "Accuracy is top-1 exact match, including Score questions; perturbations are excluded from plotted accuracy.",
+    "Macro accuracy weights eight tasks equally; micro accuracy weights 720 clean questions equally.",
+    "Only the saved paired macro-difference interval is shown; no per-task uncertainty is estimated.",
+    "Jev is a hosted alias with an unexposed revision, evaluated through Vercel AI SDK 7.0.105.",
+    "NLL is not plotted: Jev returns rounded zeros, making NLL clipping-floor sensitive (EPS 1e-9; saved alternatives 1e-6 and 1e-3)."
+  ]
+}

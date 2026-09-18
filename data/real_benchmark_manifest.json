@@ -1,0 +1,19 @@
+{
+  "benchmark_version": "2.0.0-honest-splits",
+  "provenance": {
+    "banking77_source": "PolyAI-LDN/task-specific-datasets",
+    "clinc_source": "clinc/oos-eval"
+  },
+  "splits": {
+    "train_samples": 2300,
+    "val_samples": 500,
+    "calibration_samples": 500,
+    "test_samples": 1000,
+    "missing_option_slice_samples": 200,
+    "distant_oos_slice_samples": 200
+  },
+  "candidate_limits": {
+    "max_supported": 25,
+    "default_k": 5
+  }
+}

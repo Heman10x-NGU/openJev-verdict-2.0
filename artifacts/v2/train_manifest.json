@@ -1,0 +1,48 @@
+{
+  "model_architecture": "ModernBERT-base + GLiClass-v2",
+  "parameters": 151378177,
+  "epochs": 3,
+  "batch_size": 8,
+  "effective_batch_size": 32,
+  "loss_function": "CE + 1.0 * Brier (Proper Scoring Rule)",
+  "selection_metric": "val_nll",
+  "selected_epoch": 2,
+  "scheduler": "get_cosine_schedule_with_warmup",
+  "warmup_ratio": 0.1,
+  "best_val_accuracy": 0.916,
+  "best_val_brier": 0.11916223463324897,
+  "best_val_nll": 0.22156117179827198,
+  "best_val_abstention_recall": 0.81,
+  "total_training_seconds": 645.6283350839803,
+  "device": "mps",
+  "seed": 42,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.8398726179961356,
+      "duration_seconds": 158.79704595799558,
+      "val_accuracy": 0.912,
+      "val_nll": 0.2697804118457134,
+      "val_brier": 0.13645900255650575,
+      "val_abstention_recall": 0.72
+    },
+    {
+      "epoch": 2,
+      "loss": 0.298750960456596,
+      "duration_seconds": 215.9080920839915,
+      "val_accuracy": 0.916,
+      "val_nll": 0.22156117179827198,
+      "val_brier": 0.11916223463324897,
+      "val_abstention_recall": 0.81
+    },
+    {
+      "epoch": 3,
+      "loss": 0.12417868667540549,
+      "duration_seconds": 224.52253008299158,
+      "val_accuracy": 0.93,
+      "val_nll": 0.23878168585024195,
+      "val_brier": 0.11045744162180102,
+      "val_abstention_recall": 0.8
+    }
+  ]
+}

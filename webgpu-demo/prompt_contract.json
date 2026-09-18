@@ -1,0 +1,9 @@
+{
+  "label_marker": "<<LABEL>>",
+  "sep_marker": "<<SEP>>",
+  "input_template": "Question: {question}\n\nContext:\n{context}",
+  "default_question": "What is the primary customer inquiry or banking request?",
+  "abstention_id": "__insufficient_evidence__",
+  "abstention_description": "insufficient evidence",
+  "max_candidates": 25
+}

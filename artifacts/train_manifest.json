@@ -1,0 +1,41 @@
+{
+  "model_architecture": "ModernBERT-base + GLiClass-v2",
+  "parameters": 151378177,
+  "epochs": 3,
+  "batch_size": 8,
+  "effective_batch_size": 32,
+  "loss_function": "CE + 1.0 * Brier (Proper Scoring Rule)",
+  "best_val_accuracy": 0.9625,
+  "best_val_brier": 0.07110830160369823,
+  "total_training_seconds": 769.2003375829954,
+  "device": "mps",
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.4506465987856923,
+      "duration_seconds": 262.17797904100735,
+      "val_accuracy": 0.9425,
+      "val_nll": 0.20498273768129366,
+      "val_brier": 0.09998999609260771,
+      "val_abstention_recall": 0.0
+    },
+    {
+      "epoch": 2,
+      "loss": 0.1656500560076067,
+      "duration_seconds": 251.63570737499685,
+      "val_accuracy": 0.9625,
+      "val_nll": 0.19085047648743725,
+      "val_brier": 0.07110830160369823,
+      "val_abstention_recall": 0.0
+    },
+    {
+      "epoch": 3,
+      "loss": 0.05827277617788649,
+      "duration_seconds": 216.74754612499964,
+      "val_accuracy": 0.9425,
+      "val_nll": 0.411389595138048,
+      "val_brier": 0.10632261623994502,
+      "val_abstention_recall": 0.0
+    }
+  ]
+}

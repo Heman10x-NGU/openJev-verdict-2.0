@@ -1,0 +1,19 @@
+{
+  "experiment": "E4_hard_negative_distractors",
+  "evaluation_samples": 800,
+  "hard_negatives_k5": {
+    "samples": 800,
+    "accuracy": 0.9475,
+    "nll": 0.1869661957025528,
+    "brier": 0.08863037824630737,
+    "ece": 0.035955126173794275
+  },
+  "hard_negatives_k9": {
+    "samples": 800,
+    "accuracy": 0.8475,
+    "nll": 0.44503453373908997,
+    "brier": 0.23099060356616974,
+    "ece": 0.030156672075390814
+  },
+  "degradation_k5_to_k9_accuracy": 0.09999999999999998
+}

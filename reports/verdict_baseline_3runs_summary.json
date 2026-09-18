@@ -1,0 +1,156 @@
+{
+  "num_runs": 3,
+  "runs": [
+    {
+      "model": "Verdict-OpenJev-151M",
+      "benchmark": "LocalLLaMA/typed-decisions",
+      "split": "test",
+      "device": "mps",
+      "total_cases": 400,
+      "total_questions": 2000,
+      "total_eval_seconds": 93.99,
+      "metrics": {
+        "accuracy": 0.261,
+        "soft_accuracy": 0.3444,
+        "brier_score": 0.5851,
+        "ece": 0.4209,
+        "score_mae": 1.4417,
+        "within_one_level": 0.36,
+        "latency_p50_ms": 256.02,
+        "latency_p95_ms": 321.27
+      },
+      "workflows": {
+        "agent_trace_observability": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.216
+        },
+        "customer_service": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.378
+        },
+        "invoice_processing": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.24
+        },
+        "security_incidents": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.21
+        }
+      }
+    },
+    {
+      "model": "Verdict-OpenJev-151M",
+      "benchmark": "LocalLLaMA/typed-decisions",
+      "split": "test",
+      "device": "mps",
+      "total_cases": 400,
+      "total_questions": 2000,
+      "total_eval_seconds": 103.22,
+      "metrics": {
+        "accuracy": 0.261,
+        "soft_accuracy": 0.3444,
+        "brier_score": 0.5851,
+        "ece": 0.4209,
+        "score_mae": 1.4417,
+        "within_one_level": 0.36,
+        "latency_p50_ms": 279.39,
+        "latency_p95_ms": 390.3
+      },
+      "workflows": {
+        "agent_trace_observability": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.216
+        },
+        "customer_service": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.378
+        },
+        "invoice_processing": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.24
+        },
+        "security_incidents": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.21
+        }
+      },
+      "wall_clock_time": 110.3994547079783
+    },
+    {
+      "model": "Verdict-OpenJev-151M",
+      "benchmark": "LocalLLaMA/typed-decisions",
+      "split": "test",
+      "device": "mps",
+      "total_cases": 400,
+      "total_questions": 2000,
+      "total_eval_seconds": 163.84,
+      "metrics": {
+        "accuracy": 0.261,
+        "soft_accuracy": 0.3444,
+        "brier_score": 0.5851,
+        "ece": 0.4209,
+        "score_mae": 1.4417,
+        "within_one_level": 0.36,
+        "latency_p50_ms": 406.22,
+        "latency_p95_ms": 705.18
+      },
+      "workflows": {
+        "agent_trace_observability": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.216
+        },
+        "customer_service": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.378
+        },
+        "invoice_processing": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.24
+        },
+        "security_incidents": {
+          "cases": 100,
+          "questions": 500,
+          "accuracy": 0.21
+        }
+      },
+      "wall_clock_time": 171.67579708399717
+    }
+  ],
+  "summary": {
+    "accuracy": {
+      "mean": 0.261,
+      "std": 0.0
+    },
+    "soft_accuracy": {
+      "mean": 0.3444,
+      "std": 0.0
+    },
+    "brier_score": {
+      "mean": 0.5851,
+      "std": 0.0
+    },
+    "ece": {
+      "mean": 0.4209,
+      "std": 0.0
+    },
+    "latency_p50_ms": {
+      "mean": 313.87666666666667,
+      "std": 65.98993677490196
+    },
+    "latency_p95_ms": {
+      "mean": 472.25,
+      "std": 167.09991801314564
+    }
+  }
+}

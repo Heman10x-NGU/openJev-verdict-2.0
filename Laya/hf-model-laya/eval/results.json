@@ -1,0 +1,142 @@
+{
+  "model": "rl-agent",
+  "questions_evaluated": {
+    "eval_in": 23024,
+    "eval_zs": 2400
+  },
+  "by_task_family": {
+    "eval_in": {
+      "conversation outcomes": {
+        "n": 3600,
+        "accuracy": 0.4817,
+        "ece": 0.0193,
+        "nll": 0.6933
+      },
+      "email triage": {
+        "n": 2691,
+        "accuracy": 0.7321,
+        "ece": 0.0172,
+        "nll": 0.5954
+      },
+      "emotion and tone": {
+        "n": 1825,
+        "accuracy": 0.9058,
+        "ece": 0.0183,
+        "nll": 0.2382
+      },
+      "inference and fact checking": {
+        "n": 3022,
+        "accuracy": 0.8832,
+        "ece": 0.054,
+        "nll": 0.3404
+      },
+      "instruction-following tasks": {
+        "n": 600,
+        "accuracy": 0.8783,
+        "ece": 0.0465,
+        "nll": 0.3021
+      },
+      "intent and routing": {
+        "n": 1475,
+        "accuracy": 0.9912,
+        "ece": 0.0085,
+        "nll": 0.1811
+      },
+      "moderation and safety": {
+        "n": 2708,
+        "accuracy": 0.9671,
+        "ece": 0.0613,
+        "nll": 0.1527
+      },
+      "reading comprehension": {
+        "n": 770,
+        "accuracy": 0.8468,
+        "ece": 0.0833,
+        "nll": 0.4086
+      },
+      "response quality scoring": {
+        "n": 3146,
+        "accuracy": 0.5814,
+        "ece": 0.023,
+        "nll": 1.0087
+      },
+      "robustness checks": {
+        "n": 744,
+        "accuracy": 0.8508,
+        "ece": 0.1085,
+        "nll": 1.0576
+      },
+      "search relevance": {
+        "n": 733,
+        "accuracy": 0.6276,
+        "ece": 0.066,
+        "nll": 0.7281
+      },
+      "sentiment and rating": {
+        "n": 961,
+        "accuracy": 0.4422,
+        "ece": 0.4384,
+        "nll": 3.545
+      },
+      "topic classification": {
+        "n": 749,
+        "accuracy": 0.9386,
+        "ece": 0.0285,
+        "nll": 0.1957
+      }
+    },
+    "eval_zs": {
+      "emotion and tone": {
+        "n": 600,
+        "accuracy": 0.5833,
+        "ece": 0.3178,
+        "nll": 1.9761
+      },
+      "instruction-following tasks": {
+        "n": 600,
+        "accuracy": 0.8633,
+        "ece": 0.0455,
+        "nll": 0.3187
+      },
+      "moderation and safety": {
+        "n": 600,
+        "accuracy": 0.7967,
+        "ece": 0.1713,
+        "nll": 1.4151
+      },
+      "sentiment and rating": {
+        "n": 600,
+        "accuracy": 0.3617,
+        "ece": 0.2915,
+        "nll": 1.7985
+      }
+    }
+  },
+  "calibration_temperature": [
+    1.6369030475616455,
+    1.2514300346374512,
+    1.983399510383606
+  ],
+  "latency_ms": {
+    "1_questions": {
+      "p50_ms": 38.4,
+      "p95_ms": 42.1
+    },
+    "10_questions": {
+      "p50_ms": 156.0,
+      "p95_ms": 158.4
+    },
+    "50_questions": {
+      "p50_ms": 721.4,
+      "p95_ms": 733.0
+    }
+  },
+  "act_policy": {
+    "eval_in": {
+      "automation_rate": 1.0,
+      "accuracy_when_acting": 0.8032331136738056,
+      "accuracy_when_escalating": null,
+      "accuracy_all": 0.8032331136738056
+    }
+  }
+}

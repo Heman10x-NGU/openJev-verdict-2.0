@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdict Decision Engine • 151M ModernBERT (WebGPU / WASM)</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       Linear Design System Tokens (awesome-design-md/linear.app)
+       ------------------------------------------------------------- */
+    :root {
+      --canvas: #010102;
+      --surface-1: #0f1011;
+      --surface-2: #141516;
+      --surface-3: #18191a;
+      --surface-input: #0a0b0d;
+
+      --hairline: #23252a;
+      --hairline-strong: #34343a;
+      --hairline-focus: #5e6ad2;
+
+      --ink: #f7f8f8;
+      --ink-muted: #d0d6e0;
+      --ink-subtle: #8a8f98;
+      --ink-tertiary: #62666d;
+
+      --accent: #5e6ad2;
+      --accent-hover: #717de6;
+      --accent-subtle: rgba(94, 106, 210, 0.14);
+
+      --emerald: #10b981;
+      --emerald-subtle: rgba(16, 185, 129, 0.12);
+      --amber: #f59e0b;
+      --amber-subtle: rgba(245, 158, 11, 0.12);
+      --rose: #ef4444;
+      --rose-subtle: rgba(239, 68, 68, 0.12);
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+      --radius: 8px;
+      --radius-sm: 5px;
+      --top-bezel: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    body {
+      background-color: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 48px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .playground {
+      width: 100%;
+      max-width: 920px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* -------------------------------------------------------------
+       1. Header Bar
+       ------------------------------------------------------------- */
+    header {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--top-bezel);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+      transition: all 0.3s ease;
+    }
+    .status-dot.active {
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+    .status-dot.downloading {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse-dot 1.2s infinite ease-in-out;
+    }
+    .status-dot.error {
+      background: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+      animation: none;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.5; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+
+    .app-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      color: var(--ink-subtle);
+    }
+    .badge.gpu { border-color: rgba(16, 185, 129, 0.4); color: var(--emerald); background: var(--emerald-subtle); }
+    .badge.wasm { border-color: rgba(245, 158, 11, 0.4); color: var(--amber); background: var(--amber-subtle); }
+    .badge.speed { color: #fff; border-color: rgba(94, 106, 210, 0.4); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .checkpoint-toggle {
+      display: inline-flex;
+      background: var(--surface-input);
+      border: 1px solid var(--hairline);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .checkpoint-btn {
+      background: none;
+      border: none;
+      color: var(--ink-subtle);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .checkpoint-btn.active {
+      background: var(--surface-2);
+      color: #fff;
+      border: 1px solid var(--hairline);
+    }
+    .checkpoint-btn:hover:not(.active) {
+      color: var(--ink);
+    }
+
+    /* Top Progress Bar for Model Download */
+    .top-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: transparent;
+    }
+    .top-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--emerald));
+      transition: width 0.2s ease-out, opacity 0.3s ease;
+    }
+
+    /* -------------------------------------------------------------
+       Status Banner
+       ------------------------------------------------------------- */
+    .status-banner {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      padding: 0 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* -------------------------------------------------------------
+       2. Preset Selector
+       ------------------------------------------------------------- */
+    .preset-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .preset-strip::-webkit-scrollbar { display: none; }
+
+    .preset-strip-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-tertiary);
+      white-space: nowrap;
+      margin-right: 2px;
+    }
+
+    .preset-pill {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-subtle);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .preset-pill:hover {
+      background: var(--surface-2);
+      color: var(--ink);
+      border-color: var(--hairline-strong);
+    }
+    .preset-pill.active {
+      background: var(--accent-subtle);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* -------------------------------------------------------------
+       Card Layouts
+       ------------------------------------------------------------- */
+    .card {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--top-bezel);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-subtle);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-meta {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-tertiary);
+    }
+
+    /* -------------------------------------------------------------
+       3. Context Textarea
+       ------------------------------------------------------------- */
+    .context-input {
+      width: 100%;
+      background: var(--surface-input);
+      border: 1px solid var(--hairline);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 72px;
+      max-height: 200px;
+      outline: none;
+      caret-color: var(--accent);
+      transition: border-color 0.15s ease;
+    }
+    .context-input:focus {
+      border-color: var(--hairline-focus);
+    }
+
+    /* -------------------------------------------------------------
+       4. Candidate Options Card
+       ------------------------------------------------------------- */
+    .candidate-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .candidate-item {
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .candidate-item.winner {
+      background: var(--accent-subtle);
+    }
+    .candidate-item.winner.abstention {
+      background: var(--amber-subtle);
+    }
+    .candidate-item.abstention {
+      border-style: dashed;
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.04);
+    }
+
+    .candidate-main-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cand-id-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 135px;
+      max-width: 165px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .candidate-item.abstention .cand-id-tag {
+      color: var(--amber);
+    }
+
+    .cand-edit-input {
+      flex: 1;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 4px 8px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .cand-edit-input:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: var(--surface-input);
+    }
+    .cand-edit-input:focus {
+      border-color: var(--hairline-focus);
+      background: var(--surface-input);
+    }
+
+    .cand-prob-badge {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      min-width: 52px;
+      text-align: right;
+      color: var(--ink-subtle);
+    }
+    .candidate-item.winner .cand-prob-badge {
+      color: var(--ink);
+    }
+
+    .btn-del-cand {
+      background: none;
+      border: none;
+      color: var(--ink-tertiary);
+      font-size: 14px;
+      line-height: 1;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-del-cand:hover {
+      color: var(--rose);
+      background: var(--rose-subtle);
+    }
+
+    .cand-bar-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .cand-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .candidate-item.winner .cand-bar-fill {
+      background: var(--emerald);
+    }
+    .candidate-item.abstention .cand-bar-fill {
+      background: var(--amber);
+    }
+
+    .cand-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-sm {
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn-sm:hover {
+      border-color: var(--hairline-strong);
+      background: var(--surface-3);
+    }
+
+    /* -------------------------------------------------------------
+       5. Deterministic Policy Control
+       ------------------------------------------------------------- */
+    .policy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    @media (max-width: 680px) {
+      .policy-grid { grid-template-columns: 1fr; }
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .threshold-slider {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .threshold-readout {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      min-width: 42px;
+      text-align: right;
+    }
+
+    .route-badge {
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 12.5px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .route-badge.standby {
+      background: var(--surface-2);
+      border-color: var(--hairline);
+      color: var(--ink-subtle);
+    }
+    .route-badge.auto {
+      background: var(--emerald-subtle);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .route-badge.escalate {
+      background: var(--amber-subtle);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+    .route-badge.fallback {
+      background: var(--rose-subtle);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    .route-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    .route-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .route-main-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .route-sub-text {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--ink-subtle);
+    }
+
+    /* -------------------------------------------------------------
+       6. Action Toolbar
+       ------------------------------------------------------------- */
+    .action-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-run {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 8px rgba(94, 106, 210, 0.3);
+    }
+    .btn-run:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 2px 14px rgba(94, 106, 210, 0.5);
+    }
+    .btn-run:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .kbd-hint {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .btn-receipt {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 12.5px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn-receipt:hover {
+      border-color: var(--hairline-strong);
+      background: var(--surface-2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="playground">
+
+  <!-- 1. Header Bar -->
+  <header>
+    <div class="header-left">
+      <div class="logo-lockup">
+        <span class="status-dot downloading" id="status-dot" title="Loading model..."></span>
+        <span class="app-title">Verdict Decision Engine</span>
+      </div>
+      <span class="badge wasm" id="hardware-badge">● Loading WebWorker...</span>
+      <span class="badge">151M ModernBERT</span>
+      <span class="badge speed" id="latency-badge">-- ms</span>
+    </div>
+
+    <div class="header-right">
+      <div class="checkpoint-toggle">
+        <button class="checkpoint-btn active" id="btn-cp-v2" data-cp="artifacts_v2">Fine-Tuned (Banking77)</button>
+        <button class="checkpoint-btn" id="btn-cp-v1" data-cp="artifacts">Base Zero-Shot</button>
+      </div>
+    </div>
+
+    <div class="top-progress">
+      <div class="top-progress-fill" id="top-progress-fill"></div>
+    </div>
+  </header>
+
+  <!-- Status Readout -->
+  <div class="status-banner">
+    <span id="status-text">Connecting to client WebGPU engine...</span>
+    <span id="telemetry-summary">Capacity: ≤ 25 Choices • Joint Bi-Encoder</span>
+  </div>
+
+  <!-- 2. Preset Selector -->
+  <div class="preset-strip">
+    <span class="preset-strip-label">Presets:</span>
+    <button class="preset-pill active" data-preset="card_arrival">Card Arrival</button>
+    <button class="preset-pill" data-preset="lost_or_stolen_card">Lost Card</button>
+    <button class="preset-pill" data-preset="compromised_card">Compromised Card</button>
+    <button class="preset-pill" data-preset="oos_solar">Out-of-Scope (Solar Eclipse)</button>
+    <button class="preset-pill" data-preset="shopify_division">Shopify Category</button>
+  </div>
+
+  <!-- 3. Context Text Area -->
+  <section class="card">
+    <div class="card-header">
+      <span class="card-title">Input Context / Query</span>
+      <span class="card-meta">Single forward pass attention</span>
+    </div>
+    <textarea class="context-input" id="context-input" rows="3" placeholder="Enter query text for decision evaluation...">I ordered my new card two weeks ago but haven't received it in the mail yet. Can you check delivery?</textarea>
+  </section>
+
+  <!-- 4. Candidate Options Card -->
+  <section class="card">
+    <div class="card-header">
+      <span class="card-title">Candidate Options (≤ 25 Capacity)</span>
+      <span class="card-meta" id="cand-count-label">4 options</span>
+    </div>
+
+    <div class="candidate-list" id="candidate-list">
+      <!-- Populated synchronously on first frame -->
+    </div>
+
+    <div class="cand-toolbar">
+      <button class="btn-sm" id="btn-add-cand" type="button">
+        <span>+</span> Add Option
+      </button>
+      <button class="btn-sm" id="btn-shuffle-cand" type="button" title="Demonstrate non-autoregressive order invariance">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg> Shuffle Option Order
+      </button>
+    </div>
+  </section>
+
+  <!-- 5. Deterministic Policy Control -->
+  <section class="card">
+    <div class="card-header">
+      <span class="card-title">Deterministic Policy Control</span>
+      <span class="card-meta">Client-side software gating</span>
+    </div>
+
+    <div class="policy-grid">
+      <!-- Threshold Slider -->
+      <div class="slider-container">
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-subtle);">
+          <span>Confidence Threshold (&tau;)</span>
+          <span class="threshold-readout" id="threshold-readout">0.85</span>
+        </div>
+        <div class="slider-row">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-tertiary);">0.50</span>
+          <input type="range" class="threshold-slider" id="threshold-slider" min="0.50" max="0.99" step="0.01" value="0.85">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-tertiary);">0.99</span>
+        </div>
+      </div>
+
+      <!-- Live Decision Route Badge (Initialized cleanly to Standby, evaluated against real model/preset on boot) -->
+      <div class="route-badge standby" id="route-badge">
+        <span class="route-dot"></span>
+        <div class="route-text-group">
+          <span class="route-main-text" id="route-main-text">STANDBY (Awaiting Inference)</span>
+          <span class="route-sub-text" id="route-sub-text">Click 'Run Inference' or press ⌘ ↵ to evaluate</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Action Toolbar -->
+  <div class="action-toolbar">
+    <button class="btn-run" id="btn-run-infer" type="button">
+      <span>Run Inference</span>
+      <span class="kbd-hint">⌘ ↵</span>
+    </button>
+
+    <button class="btn-receipt" id="btn-copy-receipt" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+      <span>Copy Verifiable JSON Receipt</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Real WebGPU Engine Script -->
+<script type="module">
+  // -------------------------------------------------------------
+  // Canonical Presets with Verified Domain Questions & Calibrated Baselines
+  // Verified from ModernBERT checkpoint & evaluation_report_v2.json
+  // -------------------------------------------------------------
+  const CANONICAL_PRESETS = {
+    "card_arrival": {
+      "key": "card_arrival",
+      "question": "What is the primary customer inquiry or banking request?",
+      "text": "I ordered my new card two weeks ago but haven't received it in the mail yet. Can you check delivery?",
+      "candidates": [
+        { "id": "card_arrival", "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail" },
+        { "id": "lost_or_stolen_card", "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation" },
+        { "id": "compromised_card", "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions" },
+        { "id": "__insufficient_evidence__", "desc": "insufficient evidence" }
+      ]
+    },
+    "lost_or_stolen_card": {
+      "key": "lost_or_stolen_card",
+      "question": "What is the primary customer inquiry or banking request?",
+      "text": "Someone snatched my purse with my debit card inside while I was at the train station!",
+      "candidates": [
+        { "id": "lost_or_stolen_card", "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation" },
+        { "id": "card_arrival", "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail" },
+        { "id": "pin_blocked", "desc": "Unblock or reset a card PIN after multiple incorrect entry attempts at an ATM or terminal" },
+        { "id": "__insufficient_evidence__", "desc": "insufficient evidence" }
+      ]
+    },
+    "compromised_card": {
+      "key": "compromised_card",
+      "question": "What is the primary customer inquiry or banking request?",
+      "text": "There are two charges for $240 from an electronics shop in another country that I never visited.",
+      "candidates": [
+        { "id": "compromised_card", "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions" },
+        { "id": "lost_or_stolen_card", "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation" },
+        { "id": "exchange_rate", "desc": "Check current foreign exchange rates, conversion spreads, or weekend currency trading markup" },
+        { "id": "__insufficient_evidence__", "desc": "insufficient evidence" }
+      ]
+    },
+    "oos_solar": {
+      "key": "oos_solar",
+      "question": "What is the primary customer inquiry or banking request?",
+      "text": "The 2024 total solar eclipse crossed North America, passing over Mexico, the United States, and Canada.",
+      "candidates": [
+        { "id": "card_arrival", "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail" },
+        { "id": "lost_or_stolen_card", "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation" },
+        { "id": "compromised_card", "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions" },
+        { "id": "__insufficient_evidence__", "desc": "insufficient evidence" }
+      ]
+    },
+    "shopify_division": {
+      "key": "shopify_division",
+      "question": "Which major retail division best categorizes this product merchandise?",
+      "text": "Men's Classic Slim Fit Cotton Crewneck T-Shirt in Navy Blue, Size Large",
+      "candidates": [
+        { "id": "apparel_accessories_root", "desc": "Apparel, Footwear, Jewelry and Luggage Accessories" },
+        { "id": "electronics_root", "desc": "Consumer Electronics, Computers, Audio and Telephony" },
+        { "id": "home_garden_root", "desc": "Home Decor, Furniture, Kitchenware, Garden and Patio" },
+        { "id": "sporting_goods_root", "desc": "Sporting Goods, Exercise Equipment, Outdoor and Toys" },
+        { "id": "health_food_root", "desc": "Health, Beauty, Food and Baby Supplies" },
+        { "id": "industrial_auto_root", "desc": "Business, Industrial, Automotive and Tools" },
+        { "id": "__insufficient_evidence__", "desc": "insufficient evidence" }
+      ]
+    }
+  };
+
+  let PRESETS = CANONICAL_PRESETS;
+  let activeCandidates = [];
+  let currentQuestion = CANONICAL_PRESETS.card_arrival.question;
+  let latestReceipt = null;
+  let debounceTimer = null;
+  let activeCheckpoint = "artifacts_v2";
+  let worker = null;
+  let isWorkerReady = false;
+  let pendingInference = false;
+  let activeBackendName = "WebGPU";
+
+  // DOM References
+  const statusDot = document.getElementById("status-dot");
+  const hardwareBadge = document.getElementById("hardware-badge");
+  const latencyBadge = document.getElementById("latency-badge");
+  const statusText = document.getElementById("status-text");
+  const topProgressFill = document.getElementById("top-progress-fill");
+  const telemetrySummary = document.getElementById("telemetry-summary");
+
+  const btnCpV2 = document.getElementById("btn-cp-v2");
+  const btnCpV1 = document.getElementById("btn-cp-v1");
+
+  const presetPills = document.querySelectorAll(".preset-pill");
+  const contextInput = document.getElementById("context-input");
+  const candidateList = document.getElementById("candidate-list");
+  const candCountLabel = document.getElementById("cand-count-label");
+  const btnAddCand = document.getElementById("btn-add-cand");
+  const btnShuffleCand = document.getElementById("btn-shuffle-cand");
+
+  const thresholdSlider = document.getElementById("threshold-slider");
+  const thresholdReadout = document.getElementById("threshold-readout");
+  const routeBadge = document.getElementById("route-badge");
+  const routeMainText = document.getElementById("route-main-text");
+  const routeSubText = document.getElementById("route-sub-text");
+
+  const btnRunInfer = document.getElementById("btn-run-infer");
+  const btnCopyReceipt = document.getElementById("btn-copy-receipt");
+
+  const IDLE_STATUS_TEXT = "151M ModernBERT compiled and ready in browser memory. Press 'Run Inference' to evaluate.";
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // -------------------------------------------------------------
+  // State Reset & Standby Utilities
+  // -------------------------------------------------------------
+  function resetEvaluationState(reasonText = "Click 'Run Inference' or press ⌘ ↵ to evaluate") {
+    latestReceipt = null;
+    activeCandidates.forEach(c => { c.prob = undefined; });
+
+    // Reset candidate DOM cards to clean input state
+    const items = candidateList.querySelectorAll(".candidate-item");
+    items.forEach(item => {
+      item.classList.remove("winner");
+      const candId = item.getAttribute("data-cand-id");
+      if (candId) {
+        const safeId = CSS.escape(candId);
+        const badge = item.querySelector(`[data-badge-id="${safeId}"]`);
+        const bar = item.querySelector(`[data-bar-id="${safeId}"]`);
+        if (badge) badge.textContent = "--%";
+        if (bar) bar.style.width = "0%";
+      }
+    });
+
+    // Reset Route Badge to STANDBY
+    routeBadge.className = "route-badge standby";
+    routeMainText.textContent = "STANDBY (Awaiting Inference)";
+    routeSubText.textContent = reasonText;
+
+    // Reset Latency Badge and status line so a stale timing never survives a state change
+    latencyBadge.textContent = isWorkerReady ? "Ready" : "-- ms";
+    if (isWorkerReady) {
+      statusText.textContent = IDLE_STATUS_TEXT;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Render Candidate List (Clean inputs with --% until Run Inference)
+  // -------------------------------------------------------------
+  function renderCandidates() {
+    candidateList.innerHTML = "";
+    candCountLabel.textContent = `${activeCandidates.length} options (max 25)`;
+
+    const maxProb = Math.max(...activeCandidates.map(c => (typeof c.prob === "number" ? c.prob : -1)));
+
+    activeCandidates.forEach((cand) => {
+      const isAbstain = cand.id === "__insufficient_evidence__";
+      const isWinner = typeof cand.prob === "number" && cand.prob === maxProb && cand.prob > 0;
+      const probDisplay = cand.prob !== undefined && cand.prob !== null ? `${(cand.prob * 100).toFixed(1)}%` : "--%";
+      const barWidth = cand.prob !== undefined && cand.prob !== null ? `${(cand.prob * 100).toFixed(1)}%` : "0%";
+
+      const item = document.createElement("div");
+      item.className = `candidate-item ${isAbstain ? "abstention" : ""} ${isWinner ? "winner" : ""}`.trim();
+      item.setAttribute("data-cand-id", cand.id);
+
+      item.innerHTML = `
+        <div class="candidate-main-row">
+          <span class="cand-id-tag" title="${escapeHtml(cand.id)}">${isAbstain ? "Abstention" : escapeHtml(cand.id)}</span>
+          <input type="text" class="cand-edit-input" value="${escapeHtml(cand.desc)}" placeholder="Option description...">
+          <span class="cand-prob-badge" data-badge-id="${escapeHtml(cand.id)}">${probDisplay}</span>
+          ${!isAbstain ? `<button class="btn-del-cand" title="Delete option (test abstention)" type="button" data-del-id="${escapeHtml(cand.id)}">✕</button>` : `<span style="width:24px;"></span>`}
+        </div>
+        <div class="cand-bar-track">
+          <div class="cand-bar-fill" data-bar-id="${escapeHtml(cand.id)}" style="width: ${barWidth};"></div>
+        </div>
+      `;
+
+      // Inline edit
+      const input = item.querySelector(".cand-edit-input");
+      input.addEventListener("input", (e) => {
+        cand.desc = e.target.value;
+        if (latestReceipt) {
+          resetEvaluationState("Options modified • Click 'Run Inference' to re-evaluate");
+        }
+      });
+
+      // Delete option
+      if (!isAbstain) {
+        const delBtn = item.querySelector(".btn-del-cand");
+        delBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const targetId = cand.id;
+          const targetIdx = activeCandidates.findIndex(c => c.id === targetId);
+          if (targetIdx !== -1) {
+            activeCandidates.splice(targetIdx, 1);
+            renderCandidates();
+            resetEvaluationState("Option deleted • Click 'Run Inference' to evaluate");
+          }
+        });
+      }
+
+      candidateList.appendChild(item);
+    });
+  }
+
+  // -------------------------------------------------------------
+  // Load Presets (Loads input query and choices in clean Standby mode)
+  // -------------------------------------------------------------
+  function loadPreset(key) {
+    presetPills.forEach(p => p.classList.toggle("active", p.dataset.preset === key));
+    const p = PRESETS[key] || CANONICAL_PRESETS.card_arrival;
+    if (!p) return;
+
+    currentQuestion = p.question || CANONICAL_PRESETS.card_arrival.question;
+    contextInput.value = p.text;
+    activeCandidates = JSON.parse(JSON.stringify(p.candidates));
+    renderCandidates();
+    resetEvaluationState("Click 'Run Inference' or press ⌘ ↵ to evaluate");
+  }
+
+  // Preset pill click listeners
+  presetPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      loadPreset(pill.dataset.preset);
+    });
+  });
+
+  // Context typing listeners
+  contextInput.addEventListener("input", () => {
+    if (latestReceipt) {
+      resetEvaluationState("Context modified • Click 'Run Inference' to re-evaluate");
+    }
+  });
+
+  // Add Option (Explicitly finds abstention rather than blindly popping)
+  btnAddCand.addEventListener("click", () => {
+    if (activeCandidates.length >= 25) {
+      alert("Maximum supported capacity is 25 options.");
+      return;
+    }
+    const newIdx = activeCandidates.length + 1;
+    const newId = "custom_option_" + Date.now().toString(36);
+    const newCand = {
+      id: newId,
+      desc: "New candidate action " + newIdx
+    };
+
+    // Insert right before abstention if present, otherwise append
+    const abstainIdx = activeCandidates.findIndex(c => c.id === "__insufficient_evidence__");
+    if (abstainIdx !== -1) {
+      activeCandidates.splice(abstainIdx, 0, newCand);
+    } else {
+      activeCandidates.push(newCand);
+    }
+
+    renderCandidates();
+    resetEvaluationState("Option added • Click 'Run Inference' to evaluate");
+
+    // Focus the newly added input
+    const item = candidateList.querySelector(`[data-cand-id="${CSS.escape(newId)}"]`);
+    if (item) {
+      const input = item.querySelector(".cand-edit-input");
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }
+  });
+
+  // Shuffle Candidate Order (Order invariance demonstration)
+  btnShuffleCand.addEventListener("click", () => {
+    if (activeCandidates.length <= 2) return;
+
+    // Find abstention candidate explicitly
+    const abstainIdx = activeCandidates.findIndex(c => c.id === "__insufficient_evidence__");
+    let abstainCand = null;
+    let nonAbstain = [...activeCandidates];
+
+    if (abstainIdx !== -1) {
+      abstainCand = nonAbstain.splice(abstainIdx, 1)[0];
+    }
+
+    // Fisher-Yates shuffle on non-abstention candidates
+    for (let i = nonAbstain.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [nonAbstain[i], nonAbstain[j]] = [nonAbstain[j], nonAbstain[i]];
+    }
+
+    if (abstainCand) {
+      nonAbstain.push(abstainCand);
+    }
+    activeCandidates = nonAbstain;
+
+    renderCandidates();
+    if (latestReceipt) {
+      resetEvaluationState("Candidate order shuffled • Click 'Run Inference' to verify order invariance");
+    }
+  });
+
+  // Threshold Slider (Evaluates dynamically on evaluated winner at 60fps on drag)
+  thresholdSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    thresholdReadout.textContent = val.toFixed(2);
+    if (latestReceipt && latestReceipt.selected) {
+      updatePolicyDisplay(latestReceipt.selected, latestReceipt.selected.probability, latestReceipt.selected.is_abstention, val);
+      if (latestReceipt.policy) {
+        latestReceipt.policy.threshold = val;
+        latestReceipt.policy.is_autonomous = !latestReceipt.selected.is_abstention && latestReceipt.selected.probability >= val;
+        latestReceipt.policy.action = latestReceipt.selected.is_abstention ? "route_tier1_support" : (latestReceipt.policy.is_autonomous ? `execute_${latestReceipt.selected.id}` : "escalate_supervisor_review");
+      }
+    } else {
+      routeSubText.textContent = `Deterministic policy gate set to τ = ${val.toFixed(2)} • Click 'Run Inference' to evaluate`;
+    }
+  });
+
+  // Run Inference Button (RC-4: Tactile queuing when engine is loading)
+  btnRunInfer.addEventListener("click", () => {
+    if (!isWorkerReady) {
+      pendingInference = true;
+      btnRunInfer.innerHTML = `<span>Queued (Waiting for engine)...</span><span class="kbd-hint">⌘ ↵</span>`;
+      statusText.textContent = "Inference queued — will execute automatically as soon as model finishes compiling...";
+      return;
+    }
+    triggerInference();
+  });
+
+  // Keyboard shortcut: Cmd+Enter
+  window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      triggerInference();
+    }
+  });
+
+  // Copy JSON Receipt (RC-5: Generates preliminary receipt if null, flashes feedback)
+  btnCopyReceipt.addEventListener("click", () => {
+    let receiptToCopy = latestReceipt;
+    if (!receiptToCopy) {
+      flashReceiptHint("Run inference first");
+      return;
+    }
+
+    const jsonStr = JSON.stringify(receiptToCopy, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        showCopyFeedback();
+      }).catch(() => {
+        fallbackCopy(jsonStr);
+      });
+    } else {
+      fallbackCopy(jsonStr);
+    }
+  });
+
+  const ICON_ALERT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+
+  const ICON_CLIPBOARD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>';
+
+  function showCopyFeedback() {
+    btnCopyReceipt.innerHTML = "<span>✓</span><span>Copied!</span>";
+    setTimeout(() => {
+      btnCopyReceipt.innerHTML = `${ICON_CLIPBOARD}<span>Copy Verifiable JSON Receipt</span>`;
+    }, 1500);
+  }
+
+  function flashReceiptHint(msg = "Run inference first") {
+    const originalHtml = btnCopyReceipt.innerHTML;
+    btnCopyReceipt.innerHTML = `${ICON_ALERT}<span>${msg}</span>`;
+    setTimeout(() => {
+      btnCopyReceipt.innerHTML = originalHtml;
+    }, 1500);
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showCopyFeedback();
+    } catch (e) {
+      flashReceiptHint("Copy failed (see console)");
+      console.log(text);
+    }
+    document.body.removeChild(ta);
+  }
+
+  // Checkpoint Switching (N2: Restores topProgressFill.style.opacity = "1")
+  btnCpV2.addEventListener("click", () => {
+    if (activeCheckpoint === "artifacts_v2") return;
+    activeCheckpoint = "artifacts_v2";
+    btnCpV2.classList.add("active");
+    btnCpV1.classList.remove("active");
+    switchCheckpoint();
+  });
+
+  btnCpV1.addEventListener("click", () => {
+    if (activeCheckpoint === "artifacts") return;
+    activeCheckpoint = "artifacts";
+    btnCpV1.classList.add("active");
+    btnCpV2.classList.remove("active");
+    switchCheckpoint();
+  });
+
+  function switchCheckpoint() {
+    isWorkerReady = false;
+    statusDot.className = "status-dot downloading";
+    statusText.textContent = `Loading ${activeCheckpoint}...`;
+    hardwareBadge.textContent = "● Reloading...";
+    topProgressFill.style.opacity = "1";
+    topProgressFill.style.width = "25%";
+    resetEvaluationState(`Switched to ${activeCheckpoint} • Click 'Run Inference' to evaluate`);
+    if (worker) {
+      worker.postMessage({ type: "INIT", payload: { basePath: activeCheckpoint } });
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Real Inference Pipeline
+  // -------------------------------------------------------------
+  function triggerInference() {
+    if (!isWorkerReady) {
+      pendingInference = true;
+      btnRunInfer.innerHTML = `<span>Queued (Waiting for engine)...</span><span class="kbd-hint">⌘ ↵</span>`;
+      statusText.textContent = "Model compiling in WebGPU memory (will run automatically)...";
+      return;
+    }
+
+    statusDot.className = "status-dot downloading";
+    statusText.textContent = `Executing ${activeBackendName} forward pass (median of 3)...`;
+    btnRunInfer.innerHTML = `<span>Evaluating...</span><span class="kbd-hint">⌘ ↵</span>`;
+    const threshold = parseFloat(thresholdSlider.value);
+
+    worker.postMessage({
+      type: "INFER",
+      payload: {
+        id: "verdict_query_" + Date.now(),
+        question: currentQuestion,
+        text: contextInput.value.trim(),
+        candidates: activeCandidates,
+        threshold: threshold
+      }
+    });
+  }
+
+  // Status line naming backend, precision, sample count and observed range.
+  // Backend and precision come from the receipt (the worker reports the provider
+  // it actually created and the ONNX file it actually loaded).
+  function formatTimingLabel(timings, receipt) {
+    const backend = receipt.execution_backend || "unknown backend";
+    const precision = receipt.model_precision || "unknown precision";
+    const median = typeof timings.p50_ms === "number" ? timings.p50_ms : timings.forward_readback;
+    const runs = timings.runs || 1;
+
+    let label = `Forward pass ${median.toFixed(1)}ms median of ${runs} (${backend}, ${precision})`;
+    if (typeof timings.min_ms === "number" && typeof timings.max_ms === "number") {
+      label += ` · ${timings.min_ms.toFixed(1)} to ${timings.max_ms.toFixed(1)}ms`;
+    }
+    return label;
+  }
+
+  // -------------------------------------------------------------
+  // Results Renderer (Keyed & Secure with CSS.escape - RC-7, N1)
+  // -------------------------------------------------------------
+  function renderResults(candidates, selected, selectedProb, isAbstention, isAutonomous, policyAction, timings, receipt) {
+    latestReceipt = receipt;
+    statusDot.className = "status-dot active";
+
+    latencyBadge.textContent = `${timings.total_end_to_end.toFixed(1)}ms`;
+    statusText.textContent = formatTimingLabel(timings, receipt);
+    telemetrySummary.textContent = `Tokens: ${receipt.input_token_count} • T: ${receipt.calibration.temperature.toFixed(2)}`;
+
+    // Keyed update of candidate rows using CSS.escape
+    const items = candidateList.querySelectorAll(".candidate-item");
+    items.forEach(item => {
+      const candId = item.getAttribute("data-cand-id");
+      const candData = candidates.find(c => c.id === candId);
+      if (candData) {
+        const isTop = candId === selected.id;
+        const pct = (candData.prob * 100).toFixed(1);
+        item.classList.toggle("winner", isTop);
+
+        const safeId = CSS.escape(candId);
+        const badge = item.querySelector(`[data-badge-id="${safeId}"]`);
+        const bar = item.querySelector(`[data-bar-id="${safeId}"]`);
+        if (badge) badge.textContent = `${pct}%`;
+        if (bar) bar.style.width = `${pct}%`;
+      }
+    });
+
+    const threshold = parseFloat(thresholdSlider.value);
+    updatePolicyDisplay(selected, selectedProb, isAbstention, threshold);
+  }
+
+  function updatePolicyDisplay(selected, selectedProb, isAbstention, threshold) {
+    const selectedPct = (selectedProb * 100).toFixed(1);
+    const threshPct = (threshold * 100).toFixed(0);
+
+    if (isAbstention) {
+      routeBadge.className = "route-badge fallback";
+      routeMainText.textContent = "ROUTE-TO-FALLBACK";
+      routeSubText.textContent = `Explicit Abstention (${selectedPct}%) → Dispatched to Triage Queue`;
+    } else if (selectedProb >= threshold) {
+      routeBadge.className = "route-badge auto";
+      routeMainText.textContent = `AUTO-EXECUTE (Action: ${selected.id})`;
+      routeSubText.textContent = `Calibrated confidence ${selectedPct}% ≥ ${threshPct}% policy gate`;
+    } else {
+      routeBadge.className = "route-badge escalate";
+      routeMainText.textContent = `HUMAN-REVIEW / ESCALATE`;
+      routeSubText.textContent = `Confidence ${selectedPct}% < ${threshPct}% threshold → Reviewer Queue`;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // WebWorker Initialization & Error Handling (RC-3)
+  // -------------------------------------------------------------
+  try {
+    worker = new Worker("worker.js", { type: "module" });
+    worker.postMessage({ type: "INIT", payload: { basePath: activeCheckpoint } });
+
+    worker.onerror = (err) => {
+      console.error("Worker runtime error:", err);
+      statusDot.className = "status-dot error";
+      statusDot.title = "Engine failure";
+      hardwareBadge.textContent = "● Engine Failed";
+      hardwareBadge.className = "badge";
+      hardwareBadge.style.borderColor = "rgba(239, 68, 68, 0.4)";
+      hardwareBadge.style.color = "var(--rose)";
+      hardwareBadge.style.background = "var(--rose-subtle)";
+
+      let detail = err.message || (err.filename ? `Error in ${err.filename}:${err.lineno}` : "WebWorker execution failed");
+      if (location.protocol === "file:") {
+        detail = "ES module workers require an HTTP server (e.g. npx serve or python3 -m http.server).";
+      }
+      statusText.textContent = `Worker Error: ${detail}`;
+      btnRunInfer.innerHTML = `<span>Engine Error</span><span class="kbd-hint">⌘ ↵</span>`;
+    };
+
+    worker.onmessage = (e) => {
+      const { type, backend, message, stage, percent, candidates, selected, selectedProb, isAbstention, isAutonomous, policyAction, timings, receipt } = e.data;
+
+      if (type === "PROGRESS") {
+        statusText.textContent = message;
+        statusDot.className = "status-dot downloading";
+        if (percent !== undefined && percent !== null) {
+          topProgressFill.style.width = `${percent}%`;
+        }
+        if (!isWorkerReady && !pendingInference) {
+          const actionText = stage === "downloading_weights" ? "Downloading weights..." : "Compiling shaders...";
+          btnRunInfer.innerHTML = `<span>${escapeHtml(actionText)}</span><span class="kbd-hint">⌘ ↵</span>`;
+        }
+      } else if (type === "READY") {
+        isWorkerReady = true;
+        activeBackendName = backend || activeBackendName;
+        hardwareBadge.textContent = backend === "WebGPU" ? "● WebGPU Active" : "● WASM Active";
+        hardwareBadge.className = backend === "WebGPU" ? "badge gpu" : "badge wasm";
+        statusDot.className = "status-dot active";
+        statusText.textContent = IDLE_STATUS_TEXT;
+        topProgressFill.style.width = "100%";
+        setTimeout(() => { topProgressFill.style.opacity = "0"; }, 600);
+        btnRunInfer.innerHTML = `<span>Run Inference</span><span class="kbd-hint">⌘ ↵</span>`;
+        latencyBadge.textContent = "Ready";
+
+        // Execute inference ONLY if explicitly queued by user while engine was compiling
+        if (pendingInference) {
+          pendingInference = false;
+          triggerInference();
+        }
+      } else if (type === "RESULT") {
+        btnRunInfer.innerHTML = `<span>Run Inference</span><span class="kbd-hint">⌘ ↵</span>`;
+        renderResults(candidates, selected, selectedProb, isAbstention, isAutonomous, policyAction, timings, receipt);
+      } else if (type === "ERROR" || type === "INFER_ERROR") {
+        btnRunInfer.innerHTML = `<span>Run Inference</span><span class="kbd-hint">⌘ ↵</span>`;
+        statusDot.className = "status-dot error";
+        statusText.textContent = "Engine notice: " + message;
+        console.warn("Worker error:", message);
+      }
+    };
+  } catch (err) {
+    console.error("Worker construction failed:", err);
+    statusDot.className = "status-dot error";
+    statusText.textContent = "WebWorker requires HTTP origin (e.g. npx serve or python3 -m http.server).";
+    hardwareBadge.textContent = "● HTTP Required";
+    hardwareBadge.className = "badge";
+    hardwareBadge.style.borderColor = "rgba(239, 68, 68, 0.4)";
+    hardwareBadge.style.color = "var(--rose)";
+    hardwareBadge.style.background = "var(--rose-subtle)";
+  }
+
+  // Synchronous Initial Boot (Immediate Candidate Cards & Calibrated Baseline in DOM)
+  loadPreset("card_arrival", false);
+</script>
+
+</body>
+</html>

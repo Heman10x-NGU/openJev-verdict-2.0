@@ -1,0 +1,67 @@
+{
+  "experiment": "E2_option_order_sensitivity",
+  "sample_count": 1000,
+  "seed": 42,
+  "reversal_flip_rate": 0.03,
+  "reversal_flips_count": 30,
+  "mean_tv_distance_reversal": 0.03367716942080187,
+  "flips_by_condition": {
+    "reversed": {
+      "flips_count": 30,
+      "flip_rate": 0.03,
+      "mean_tv_distance": 0.03367716942080187,
+      "p95_tv_distance": 0.17028893235656134
+    },
+    "shuffle_1": {
+      "flips_count": 21,
+      "flip_rate": 0.021,
+      "mean_tv_distance": 0.028609131369178614,
+      "p95_tv_distance": 0.14129368738213074
+    },
+    "shuffle_2": {
+      "flips_count": 19,
+      "flip_rate": 0.019,
+      "mean_tv_distance": 0.028487917730284154,
+      "p95_tv_distance": 0.1381376955821906
+    },
+    "shuffle_3": {
+      "flips_count": 21,
+      "flip_rate": 0.021,
+      "mean_tv_distance": 0.029380668704533035,
+      "p95_tv_distance": 0.14375077601926015
+    }
+  },
+  "any_flip_rate": 0.045,
+  "confidence_correlation": {
+    "mean_conf_flipped": 0.5886846595340305,
+    "mean_conf_invariant": 0.9370874679213419,
+    "lower_confidence_drives_flips": true
+  },
+  "abstention_position_bias": {
+    "position_0": {
+      "samples": 995,
+      "mean_abstention_prob": 0.2231971585142646,
+      "abstention_selection_rate": 0.2050251256281407
+    },
+    "position_1": {
+      "samples": 958,
+      "mean_abstention_prob": 0.2298117752155602,
+      "abstention_selection_rate": 0.20876826722338204
+    },
+    "position_2": {
+      "samples": 1048,
+      "mean_abstention_prob": 0.25679051768539457,
+      "abstention_selection_rate": 0.23759541984732824
+    },
+    "position_3": {
+      "samples": 1004,
+      "mean_abstention_prob": 0.24364263593278124,
+      "abstention_selection_rate": 0.22211155378486055
+    },
+    "position_4": {
+      "samples": 995,
+      "mean_abstention_prob": 0.2341741062872739,
+      "abstention_selection_rate": 0.2100502512562814
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "total_samples": 5000,
+  "splits": {
+    "train.jsonl": 4000,
+    "val.jsonl": 500,
+    "test.jsonl": 500
+  },
+  "abstention_rate": 0.2,
+  "test_contamination_count": 211,
+  "format": "openjev-jsonl-v1"
+}

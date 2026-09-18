@@ -1,0 +1,11 @@
+{
+  "bundle_version": "1.0.0",
+  "model_architecture": "knowledgator/gliclass-modern-base-v2.0",
+  "checkpoint_path": "artifacts/v2/model.safetensors",
+  "safetensors_sha256": "d252823994d47a7933217fc86449493299643af6a0c0d83d6bd5a7666d3253ef",
+  "onnx_path": "artifacts/v2/model.onnx",
+  "onnx_sha256": "4ae01f822538b000fa0e55859d4b3e6b40871d860149397e8784428b2a42ee5e",
+  "opset_version": 17,
+  "max_capacity_logits": 25,
+  "export_date": "2026-09-17T16:59:04Z"
+}

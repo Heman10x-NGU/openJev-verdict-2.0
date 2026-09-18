@@ -1,0 +1,41 @@
+{
+  "model": "Verdict-OpenJev-151M",
+  "benchmark": "LocalLLaMA/typed-decisions",
+  "split": "test",
+  "device": "mps",
+  "total_cases": 400,
+  "total_questions": 2000,
+  "total_eval_seconds": 93.99,
+  "metrics": {
+    "accuracy": 0.261,
+    "soft_accuracy": 0.3444,
+    "brier_score": 0.5851,
+    "ece": 0.4209,
+    "score_mae": 1.4417,
+    "within_one_level": 0.36,
+    "latency_p50_ms": 256.02,
+    "latency_p95_ms": 321.27
+  },
+  "workflows": {
+    "agent_trace_observability": {
+      "cases": 100,
+      "questions": 500,
+      "accuracy": 0.216
+    },
+    "customer_service": {
+      "cases": 100,
+      "questions": 500,
+      "accuracy": 0.378
+    },
+    "invoice_processing": {
+      "cases": 100,
+      "questions": 500,
+      "accuracy": 0.24
+    },
+    "security_incidents": {
+      "cases": 100,
+      "questions": 500,
+      "accuracy": 0.21
+    }
+  }
+}

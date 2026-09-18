@@ -1,0 +1,270 @@
+{
+  "card_arrival": {
+    "key": "card_arrival",
+    "name": "Card Arrival (In-Scope)",
+    "question": "What is the primary customer inquiry or banking request?",
+    "text": "I ordered my new card two weeks ago but haven't received it in the mail yet. Can you check delivery?",
+    "candidates": [
+      {
+        "id": "card_arrival",
+        "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail"
+      },
+      {
+        "id": "lost_or_stolen_card",
+        "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation"
+      },
+      {
+        "id": "compromised_card",
+        "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "lost_or_stolen_card": {
+    "key": "lost_or_stolen_card",
+    "name": "Lost/Stolen Card (High Urgency)",
+    "question": "What is the primary customer inquiry or banking request?",
+    "text": "Someone snatched my purse with my debit card inside while I was at the train station!",
+    "candidates": [
+      {
+        "id": "lost_or_stolen_card",
+        "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation"
+      },
+      {
+        "id": "card_arrival",
+        "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail"
+      },
+      {
+        "id": "pin_blocked",
+        "desc": "Unblock or reset a card PIN after multiple incorrect entry attempts at an ATM or terminal"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "compromised_card": {
+    "key": "compromised_card",
+    "name": "Compromised Card (Fraud Flag)",
+    "question": "What is the primary customer inquiry or banking request?",
+    "text": "There are two charges for $240 from an electronics shop in another country that I never visited.",
+    "candidates": [
+      {
+        "id": "compromised_card",
+        "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions"
+      },
+      {
+        "id": "lost_or_stolen_card",
+        "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation"
+      },
+      {
+        "id": "exchange_rate",
+        "desc": "Check current foreign exchange rates, conversion spreads, or weekend currency trading markup"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "oos_solar": {
+    "key": "oos_solar",
+    "name": "Out-of-Scope (Solar Eclipse)",
+    "question": "What is the primary customer inquiry or banking request?",
+    "text": "The 2024 total solar eclipse crossed North America, passing over Mexico, the United States, and Canada.",
+    "candidates": [
+      {
+        "id": "card_arrival",
+        "desc": "Inquire about whether a newly ordered debit or credit card has arrived or when it will arrive in the mail"
+      },
+      {
+        "id": "lost_or_stolen_card",
+        "desc": "Report a physically lost, stolen, or misplaced card requiring immediate permanent block or cancellation"
+      },
+      {
+        "id": "compromised_card",
+        "desc": "Report suspected unauthorized card cloning, skimmed magnetic stripe, or fraudulent card transactions"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "smarthome_lights": {
+    "key": "smarthome_lights",
+    "name": "Cookbook T08: Smart Home (Lights)",
+    "question": "Which home automation action does the user want executed?",
+    "text": "Turn off all the lights in the house before going to sleep and dim the hallway lamps.",
+    "candidates": [
+      {
+        "id": "lights_control",
+        "desc": "Turn on, turn off, or dim household lights"
+      },
+      {
+        "id": "climate_control",
+        "desc": "Adjust thermostat temperature, AC, or heating"
+      },
+      {
+        "id": "security_locks",
+        "desc": "Lock or unlock doors and arm security system"
+      },
+      {
+        "id": "media_playback",
+        "desc": "Play music, pause podcast, or adjust speaker volume"
+      },
+      {
+        "id": "vacuum_cleaning",
+        "desc": "Start robot vacuum cleaner in specific rooms"
+      },
+      {
+        "id": "alarms_timers",
+        "desc": "Set alarm, wake-up timer, or reminder countdown"
+      },
+      {
+        "id": "camera_feed",
+        "desc": "Show security camera video feed or doorbell camera"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "smarthome_climate": {
+    "key": "smarthome_climate",
+    "name": "Cookbook T08: Smart Home (Climate)",
+    "question": "Which home automation action does the user want executed?",
+    "text": "Set the thermostat downstairs to 68 degrees and turn on AC cooling in the nursery.",
+    "candidates": [
+      {
+        "id": "lights_control",
+        "desc": "Turn on, turn off, or dim household lights"
+      },
+      {
+        "id": "climate_control",
+        "desc": "Adjust thermostat temperature, AC, or heating"
+      },
+      {
+        "id": "security_locks",
+        "desc": "Lock or unlock doors and arm security system"
+      },
+      {
+        "id": "media_playback",
+        "desc": "Play music, pause podcast, or adjust speaker volume"
+      },
+      {
+        "id": "vacuum_cleaning",
+        "desc": "Start robot vacuum cleaner in specific rooms"
+      },
+      {
+        "id": "alarms_timers",
+        "desc": "Set alarm, wake-up timer, or reminder countdown"
+      },
+      {
+        "id": "camera_feed",
+        "desc": "Show security camera video feed or doorbell camera"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "function_correlation": {
+    "key": "function_correlation",
+    "name": "Cookbook T09: Trading API (Rolling Correlation)",
+    "question": "Which API tool function should be invoked for this request?",
+    "text": "plot rolling correlation between nvda and spy for the past month",
+    "candidates": [
+      {
+        "id": "plot_price",
+        "desc": "Chart stock historical price line or candlesticks"
+      },
+      {
+        "id": "market_summary",
+        "desc": "Get broad market index summary and performance"
+      },
+      {
+        "id": "compare_returns",
+        "desc": "Compare percentage returns across multiple tickers"
+      },
+      {
+        "id": "rolling_correlation",
+        "desc": "Calculate rolling correlation between symbol and benchmark"
+      },
+      {
+        "id": "volatility_calc",
+        "desc": "Compute historical price volatility and annualized standard deviation"
+      },
+      {
+        "id": "top_movers",
+        "desc": "List top daily market gainers or losers"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "shopify_division": {
+    "key": "shopify_division",
+    "name": "Cookbook T05: Shopify Retail Division (Beam)",
+    "question": "Which major retail division best categorizes this product merchandise?",
+    "text": "Men's Classic Slim Fit Cotton Crewneck T-Shirt in Navy Blue, Size Large",
+    "candidates": [
+      {
+        "id": "apparel_accessories_root",
+        "desc": "Apparel, Footwear, Jewelry and Luggage Accessories"
+      },
+      {
+        "id": "electronics_root",
+        "desc": "Consumer Electronics, Computers, Audio and Telephony"
+      },
+      {
+        "id": "home_garden_root",
+        "desc": "Home Decor, Furniture, Kitchenware, Garden and Patio"
+      },
+      {
+        "id": "sporting_goods_root",
+        "desc": "Sporting Goods, Exercise Equipment, Outdoor and Toys"
+      },
+      {
+        "id": "health_food_root",
+        "desc": "Health, Beauty, Food and Baby Supplies"
+      },
+      {
+        "id": "industrial_auto_root",
+        "desc": "Business, Industrial, Automotive and Tools"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  },
+  "custom": {
+    "key": "custom",
+    "name": "Custom Schema",
+    "question": "What is the primary customer inquiry or banking request?",
+    "text": "Enter your customer request text here...",
+    "candidates": [
+      {
+        "id": "action_a",
+        "desc": "Action a description"
+      },
+      {
+        "id": "action_b",
+        "desc": "Action b description"
+      },
+      {
+        "id": "__insufficient_evidence__",
+        "desc": "insufficient evidence"
+      }
+    ]
+  }
+}

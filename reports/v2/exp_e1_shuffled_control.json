@@ -1,0 +1,22 @@
+{
+  "experiment": "E1_shuffled_context_control",
+  "sample_count": 1000,
+  "seed": 42,
+  "original_test": {
+    "accuracy": 0.95,
+    "negative_log_likelihood": 0.17684410512447357,
+    "brier_score": 0.0785319060087204,
+    "mean_confidence": 0.9214093415439129,
+    "abstention_rate": 0.218
+  },
+  "shuffled_control": {
+    "accuracy": 0.224,
+    "negative_log_likelihood": 3.6561355590820312,
+    "brier_score": 1.3177696466445923,
+    "mean_confidence": 0.8345281798839569,
+    "abstention_rate": 0.727
+  },
+  "accuracy_drop": 0.726,
+  "nll_increase": 3.4792914539575577,
+  "context_dependence_confirmed": true
+}

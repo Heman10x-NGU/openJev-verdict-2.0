@@ -1,0 +1,44 @@
+{
+  "experiment": "E5_abstention_generalization",
+  "sample_count": 200,
+  "baseline_standard_recall": 0.755,
+  "baseline_standard": {
+    "samples": 200,
+    "abstention_recall": 0.755,
+    "abstention_precision": 1.0,
+    "abstention_f1": 0.8603988603988605,
+    "true_abstentions": 151,
+    "false_positives": 0,
+    "false_negatives": 49
+  },
+  "hard_negatives_k9": {
+    "samples": 200,
+    "abstention_recall": 0.18,
+    "abstention_precision": 1.0,
+    "abstention_f1": 0.3050847457627119,
+    "true_abstentions": 36,
+    "false_positives": 0,
+    "false_negatives": 164
+  },
+  "synonym_phrasing": {
+    "samples": 200,
+    "abstention_recall": 0.235,
+    "abstention_precision": 1.0,
+    "abstention_f1": 0.38056680161943324,
+    "true_abstentions": 47,
+    "false_positives": 0,
+    "false_negatives": 153
+  },
+  "combined_hard_and_synonym": {
+    "samples": 200,
+    "abstention_recall": 0.1,
+    "abstention_precision": 1.0,
+    "abstention_f1": 0.18181818181818182,
+    "true_abstentions": 20,
+    "false_positives": 0,
+    "false_negatives": 180
+  },
+  "recall_delta_hard_k9": -0.575,
+  "recall_delta_synonym": -0.52,
+  "recall_delta_combined": -0.655
+}

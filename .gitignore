@@ -1,0 +1,35 @@
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+.DS_Store
+model_cache/
+*.onnx
+*.safetensors
+*.pt
+files-not-tobe-commited/
+internal/
+oss/
+node_modules/
+:memory:.ses
+verification-worktree/
+
+# Internal research notes, prompts, agent instructions, and planning docs (local only)
+/0*.md
+/AGENTS.md
+/Plans/
+/tweets/
+/reports/astra-review-2026-09-17/
+/NEW-BUILD-PROPOSAL-2026-09-17/
+/reports/v2/_cache/
+/RLCD Cookbook/
+/cookbooks/
+plans/
+plans/**

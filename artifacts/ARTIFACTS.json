@@ -1,0 +1,60 @@
+{
+  "repo_id": "heman10x/rlcd-modernbert-151m",
+  "version": "2.0.0",
+  "files": {
+    "model.safetensors": {
+      "filename": "model.safetensors",
+      "sha256": "d252823994d47a7933217fc86449493299643af6a0c0d83d6bd5a7666d3253ef",
+      "bytes": 605529340,
+      "source_file": "artifacts/v2/model.safetensors"
+    },
+    "model_fp16.onnx": {
+      "filename": "model_fp16.onnx",
+      "sha256": "4db28305590c714e33c2cacb75a57ec941c72bb210e1266ba2c7d77e85ddc526",
+      "bytes": 303785047,
+      "source_file": "artifacts/v2/model_fp16.onnx"
+    },
+    "model.onnx": {
+      "filename": "model.onnx",
+      "sha256": "4ae01f822538b000fa0e55859d4b3e6b40871d860149397e8784428b2a42ee5e",
+      "bytes": 606323181,
+      "source_file": "artifacts/v2/model.onnx"
+    },
+    "tokenizer.json": {
+      "filename": "tokenizer.json",
+      "sha256": "8bb449eb0c037aae44115b65905bb339b8f3f74eb37067c19127feb3c0755723",
+      "bytes": 3583596,
+      "source_file": "artifacts/v2/tokenizer.json"
+    },
+    "tokenizer_config.json": {
+      "filename": "tokenizer_config.json",
+      "sha256": "fb54f027372062b2ca52282efb04d178a8b57167a00cd8f4e816515823a2c016",
+      "bytes": 380,
+      "source_file": "artifacts/v2/tokenizer_config.json"
+    },
+    "config.json": {
+      "filename": "config.json",
+      "sha256": "303f8eef1009cfdcb0cfba3e653247e625f16a4501e2351bad1a633f1f644695",
+      "bytes": 3836,
+      "source_file": "artifacts/v2/config.json"
+    },
+    "calibrator.json": {
+      "filename": "calibrator.json",
+      "sha256": "9686e84bb6fb90a8ceabb6994fb9c18ac6a64272d5c413c5f12bed1ee4ccb1b3",
+      "bytes": 299,
+      "source_file": "artifacts/v2/calibrator.json"
+    },
+    "bundle_manifest.json": {
+      "filename": "bundle_manifest.json",
+      "sha256": "3bc1c779f09b069b48f8f2179bb4f7478320ec7cab45c14c66597d6082e5a179",
+      "bytes": 464,
+      "source_file": "artifacts/v2/bundle_manifest.json"
+    },
+    "train_manifest.json": {
+      "filename": "train_manifest.json",
+      "sha256": "0de6203ad73e8987aef3fd6afd5a4522e2d329e1b63812af449e1f51b75d5388",
+      "bytes": 1345,
+      "source_file": "artifacts/v2/train_manifest.json"
+    }
+  }
+}

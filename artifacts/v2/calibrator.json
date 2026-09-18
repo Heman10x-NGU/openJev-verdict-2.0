@@ -1,0 +1,9 @@
+{
+  "model_id": "openjev-modernbert-151.4m",
+  "temperature": 1.0,
+  "log_temperature": 0.0,
+  "scope": "restricted_5_candidate_selection",
+  "artifact_hash": "e6a13d7ebffc39050d5e8687a4192b02fc922262d4e8bb43586ab32605ad2ea8",
+  "format_version": "rlcd-calibrator-v1",
+  "note": "Shipped temperature is 1.0 (uncalibrated). The fitted value 1.4265148639678955 is retained as a measured result in reports/v2/evaluation_report_v2.json, where the uncalibrated model scores better on NLL, Brier and ECE."
+}

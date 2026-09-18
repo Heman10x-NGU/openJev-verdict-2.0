@@ -24,12 +24,9 @@ verification-worktree/
 # Internal research notes, prompts, agent instructions, and planning docs (local only)
 /0*.md
 /AGENTS.md
-/Plans/
 /tweets/
 /reports/astra-review-2026-09-17/
 /NEW-BUILD-PROPOSAL-2026-09-17/
 /reports/v2/_cache/
 /RLCD Cookbook/
 /cookbooks/
-plans/
-plans/**

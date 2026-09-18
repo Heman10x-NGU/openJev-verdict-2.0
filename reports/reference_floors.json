@@ -1,0 +1,37 @@
+{
+  "benchmark": "LocalLLaMA/typed-decisions",
+  "total_test_cases": 400,
+  "total_test_decisions": 2000,
+  "reference_floors": {
+    "uniform_random": {
+      "accuracy": 0.2985,
+      "brier": 0.2433,
+      "ece": 0.019,
+      "score_mae": 0.7063
+    },
+    "majority_label": {
+      "accuracy": 0.4835,
+      "brier": null,
+      "ece": 0.0387
+    },
+    "tfidf_logistic_regression": {
+      "accuracy": 0.661,
+      "brier": 0.152,
+      "ece": 0.0207,
+      "score_mae": 0.3921
+    },
+    "verdict_1_0_baseline": {
+      "accuracy": 0.261,
+      "brier": 0.5851,
+      "ece": 0.4209,
+      "score_mae": 1.4417,
+      "latency_p50_ms": 313.88
+    },
+    "gold_distribution_oracle": {
+      "accuracy": 0.9845,
+      "brier": 0.0,
+      "ece": 0.3256,
+      "score_mae": 0.0
+    }
+  }
+}

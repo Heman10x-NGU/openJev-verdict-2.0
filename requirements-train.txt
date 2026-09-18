@@ -1,0 +1,13 @@
+# Verdict 2.0 training dependencies.
+# Install PyTorch FIRST from the CUDA 12.1 index (see RUNBOOK.md), then this file.
+transformers>=4.48
+datasets>=2.20
+numpy>=1.26
+scikit-learn>=1.4
+safetensors>=0.4
+accelerate>=0.30
+# 8-bit AdamW. Required to full fine-tune ModernBERT-large on a 6 GB card.
+bitsandbytes>=0.43 ; platform_system != "Darwin"
+# ONNX export for the WebGPU playground
+onnx>=1.16
+onnxruntime>=1.18

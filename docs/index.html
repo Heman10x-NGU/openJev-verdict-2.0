@@ -162,8 +162,9 @@
   /* --- chart --- */
   .figure { background: var(--surface); border: 1px solid var(--rule); padding: 20px; }
   .figure figcaption { font-size: 0.82rem; color: var(--ink-3); margin-top: 14px; max-width: 62ch; line-height: 1.55; }
-  .chart-scroll { overflow-x: auto; }
-  svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .chart-scroll svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  .header-nav svg { display: inline-block; width: 14px; height: 14px; vertical-align: middle; flex-shrink: 0; }
   .ax { stroke: var(--rule-2); stroke-width: 1; }
   .grid { stroke: var(--rule); stroke-width: 1; }
   .tick-t {
@@ -242,9 +243,6 @@
         </a>
         <a href="https://huggingface.co/heman10x/openJev-verdict-2.0" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace, monospace; font-size:0.75rem; text-decoration:none; padding:6px 12px; border:1px solid var(--accent); background:var(--accent-wash); color:var(--accent-ink); border-radius:4px; font-weight:600;">
           🤗 Hugging Face
-        </a>
-        <a href="../webgpu-demo/index.html" style="display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace, monospace; font-size:0.75rem; text-decoration:none; padding:6px 12px; border:1px solid var(--rule-2); background:var(--surface); color:var(--ink); border-radius:4px; font-weight:600;">
-          WebGPU Live Demo
         </a>
       </div>
     </div>

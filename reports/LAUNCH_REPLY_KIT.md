@@ -53,6 +53,17 @@ However, we directly measured discrimination via **AUROC** on held-out dev decis
 
 An AUROC of 0.7861 proves the head is **not** just predicting the base rate. It successfully ranks correct decisions higher than incorrect decisions ~79% of the time, providing stronger separation than the raw distribution logits while maintaining near-zero calibration error (ECE 0.0144).
 
+Furthermore, empirical **Risk–Coverage (Selective Classification)** on held-out decisions demonstrates smooth monotonic error reduction for human-in-the-loop escalation:
+
+| Coverage | Min Confidence Threshold | Accuracy | Error (Risk) |
+|---|---|---|---|
+| 100% | 0.2672 | 78.50% | 21.50% |
+| 90% | 0.5388 | 82.64% | 17.36% |
+| 80% | 0.6223 | 85.00% | 15.00% |
+| 70% | 0.6912 | 88.04% | 11.96% |
+| 60% | 0.7473 | 90.21% | 9.79% |
+| 50% | 0.7986 | 92.25% | 7.75% |
+
 ---
 
 ### "Did you tune on the test set?"

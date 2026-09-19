@@ -1,7 +1,0 @@
-gradio>=5.0
-torch>=2.4
-transformers>=5.0
-safetensors>=0.4
-huggingface_hub>=0.30
-numpy>=1.24
-spaces>=0.30

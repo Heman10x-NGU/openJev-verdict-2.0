@@ -36,6 +36,7 @@ class Item:
     label: int                  # gold argmax label index
     option_keys: Tuple[str, ...]
     gold_score: float           # teacher expected level, score questions only
+    source: Dict[str, Any] | None = None  # state/qdef/gold, kept so the item can be rebuilt permuted
 
 
 def _parse(row: Dict[str, Any], key: str) -> Any:
@@ -98,7 +99,7 @@ def build_item(
     ids = (ids + state + [tokenizer.sep_token_id])[:max_len]
 
     if any(m >= max_len for m in markers):
-        return None
+        return None  # caller counts these; see load_items
 
     probs = gold.get("probabilities", {})
     raw = [float(probs.get(keys[i], 0.0)) for i in order]
@@ -120,6 +121,7 @@ def build_item(
         label=label,
         option_keys=tuple(ordered_keys),
         gold_score=float(gold.get("score", 0.0)),
+        source={"state": str(row["state"]), "qdef": qdef, "gold": gold, "id": row.get("id", ""), "workflow": row.get("workflow", "")},
     )
 
 
@@ -130,17 +132,44 @@ def load_items(split: str, tokenizer: Any, limit: int | None = None) -> List[Ite
     ds = load_dataset("LocalLLaMA/typed-decisions", "all", split=split)
     n = len(ds) if limit is None else min(len(ds), limit)
     items: List[Item] = []
+    dropped = 0
     for i in range(n):
         row = ds[i]
         questions = _parse(row, "questions")
         gold = _parse(row, "gold")
         for qid, qdef in questions.items():
             if qid not in gold:
+                dropped += 1
                 continue
             item = build_item(tokenizer, row, qid, qdef, gold[qid])
-            if item is not None:
-                items.append(item)
+            if item is None:
+                dropped += 1
+                continue
+            items.append(item)
+    if dropped:
+        # Silent drops would quietly change the denominator of every reported metric.
+        print(f"  WARNING: dropped {dropped} of {len(items) + dropped} decisions (markers past max_len or gold missing)")
     return items
+
+
+def permuted_twin(tokenizer: Any, item: Item, rng: Any) -> Tuple[Item, List[int]] | None:
+    """Rebuild an item with its options shuffled.
+
+    Returns (twin, order) where order[j] is the ORIGINAL index now sitting at position j, so a
+    distribution over the twin can be mapped back onto the original option ordering. This is the
+    mechanism behind the permutation-KL term, borrowed from Kev's `permuted_copy`.
+    """
+    width = len(item.markers)
+    if item.source is None or item.qtype != QTYPES["choice"] or width < 3:
+        return None
+    order = list(range(width))
+    rng.shuffle(order)
+    if order == list(range(width)):
+        return None
+    src = item.source
+    row = {"state": src["state"], "id": src["id"], "workflow": src["workflow"]}
+    twin = build_item(tokenizer, row, item.qid, src["qdef"], src["gold"], option_order=order)
+    return (twin, order) if twin is not None else None
 
 
 def split_by_case(items: List[Item], fit: float = 0.70, calib: float = 0.15, seed: int = 0) -> Dict[str, List[Item]]:

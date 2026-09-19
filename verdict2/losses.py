@@ -29,6 +29,30 @@ def ranked_probability_score(probs: torch.Tensor, target: torch.Tensor, mask: to
     return (diff * mask).sum(-1) / (k - 1)
 
 
+def permutation_kl(
+    logits_a: torch.Tensor,
+    logits_b: torch.Tensor,
+    orders: list[list[int]],
+) -> torch.Tensor:
+    """Symmetric KL between the same questions scored under two option orderings.
+
+    Borrowed from Kev, which trains this term and still measures a 7.41% argmax flip rate under
+    option reordering. `orders[i][j]` is the original option index now at position j in the twin,
+    so the twin's distribution is scattered back onto the original ordering before comparison.
+    """
+    log_a = torch.log_softmax(logits_a, dim=-1)
+    log_b_raw = torch.log_softmax(logits_b, dim=-1)
+
+    log_b = torch.full_like(log_a, -1e4)
+    for i, order in enumerate(orders):
+        index = torch.tensor(order, device=log_a.device, dtype=torch.long)
+        log_b[i, index] = log_b_raw[i, : len(order)]
+
+    kl_ab = F.kl_div(log_b, log_a, log_target=True, reduction="none").sum(-1)
+    kl_ba = F.kl_div(log_a, log_b, log_target=True, reduction="none").sum(-1)
+    return (0.5 * (kl_ab + kl_ba)).mean()
+
+
 def decision_loss(
     logits: torch.Tensor,
     batch: dict,

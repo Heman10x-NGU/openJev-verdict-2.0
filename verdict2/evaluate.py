@@ -29,31 +29,64 @@ CHECKLIST = [
 ]
 
 
-def permutation_flip_rate(model, items, pad_id, device, batch_size, trials=5, seed=0):
-    """Fraction of choice questions whose argmax changes when options are reordered."""
-    from .data import build_item  # noqa: F401  (documented dependency)
+def permutation_stability(model, items, pad_id, device, batch_size, trials=5, seed=0):
+    """Measure order sensitivity the way Kev reports it, so the numbers compare directly.
 
-    base = {(r["case_id"], r["qid"]): int(np.argmax(r["probs"])) for r in infer(model, items, pad_id, device, batch_size, True)}
-    rng = random.Random(seed)
+    Kev's released checkpoint records argmax_flip_rate 0.0741, mean_prob_spread 0.0653 and
+    p90_prob_spread 0.2486 on this perturbation. Spread is the range of the probability assigned to
+    the originally-top option across orderings, which catches models that keep their argmax while
+    still moving a lot of mass.
+    """
+    import random as _random
+
+    from .data import permuted_twin
+
+    rng = _random.Random(seed)
+    base = {}
+    for r in infer(model, items, pad_id, device, batch_size, True):
+        base[(r["case_id"], r["qid"])] = (int(np.argmax(r["probs"])), r["probs"])
+
     flips = total = 0
+    observed = defaultdict(list)
     for _ in range(trials):
-        shuffled = []
-        for it in items:
-            width = len(it.markers)
-            if it.qtype != 0 or width < 3:
+        twins, orders = [], {}
+        for item in items:
+            built = permuted_twin(TOKENIZER, item, rng)
+            if built is None:
                 continue
-            order = list(range(width))
-            rng.shuffle(order)
-            shuffled.append((it, order))
-        if not shuffled:
+            twin, order = built
+            twins.append(twin)
+            orders[(twin.case_id, twin.qid)] = order
+        if not twins:
             break
-        subset = [it for it, _ in shuffled]
-        for r in infer(model, subset, pad_id, device, batch_size, True):
+        for r in infer(model, twins, pad_id, device, batch_size, True):
             key = (r["case_id"], r["qid"])
-            if key in base:
-                total += 1
-                flips += int(int(np.argmax(r["probs"])) != base[key])
-    return float(flips / total) if total else 0.0
+            if key not in base or key not in orders:
+                continue
+            order = orders[key]
+            probs = np.asarray(r["probs"], dtype=float)
+            # map the twin distribution back onto the original option ordering
+            aligned = np.zeros_like(probs)
+            for position, original in enumerate(order):
+                if position < len(probs) and original < len(aligned):
+                    aligned[original] = probs[position]
+            base_arg, base_probs = base[key]
+            total += 1
+            flips += int(int(np.argmax(aligned)) != base_arg)
+            if base_arg < len(aligned):
+                observed[key].append(float(aligned[base_arg]))
+
+    spreads = [max(v) - min(v) for v in observed.values() if len(v) > 1]
+    return {
+        "argmax_flip_rate": round(float(flips / total), 4) if total else 0.0,
+        "mean_prob_spread": round(float(np.mean(spreads)), 4) if spreads else 0.0,
+        "p90_prob_spread": round(float(np.percentile(spreads, 90)), 4) if spreads else 0.0,
+        "n_perturbed": total,
+        "kev_reference": {"argmax_flip_rate": 0.0741, "mean_prob_spread": 0.0653, "p90_prob_spread": 0.2486},
+    }
+
+
+TOKENIZER = None  # set in main(); permuted_twin needs it to re-tokenize
 
 
 def main() -> None:
@@ -80,6 +113,8 @@ def main() -> None:
 
     tokenizer = AutoTokenizer.from_pretrained(backbone)
     pad_id = tokenizer.pad_token_id or 0
+    global TOKENIZER
+    TOKENIZER = tokenizer
 
     model = VerdictModel(backbone).to(device)
     model.load_state_dict(checkpoint["state_dict"])
@@ -106,7 +141,7 @@ def main() -> None:
         "device": device,
         "total_decisions": len(records),
         "metrics": {k: (round(v, 4) if isinstance(v, float) else v) for k, v in metrics.items()},
-        "permutation_argmax_flip_rate": round(permutation_flip_rate(model, items, pad_id, device, args.batch_size), 4),
+        "permutation_stability": permutation_stability(model, items, pad_id, device, args.batch_size),
         "throughput_decisions_per_second": round(len(records) / max(elapsed, 1e-9), 1),
         "workflows": {
             wf: {"decisions": len(rows), "accuracy": round(summarize(rows)["accuracy"], 4)}

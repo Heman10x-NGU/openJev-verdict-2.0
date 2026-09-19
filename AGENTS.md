@@ -61,6 +61,51 @@ Do not re-derive these, and do not contradict them without new measurements.
    0.766, Brier 0.066, ECE 0.214, which is exactly the tradeoff in point 3. Kev has never been
    evaluated on this benchmark.
 
+## What we take from Laya and from Kev
+
+Both reference repositories are vendored in this one, at `Laya/` and `Kev/`. Read them locally.
+Nothing needs downloading.
+
+Taken from Laya (ModernBERT-large encoder, 0.766 accuracy on this benchmark):
+
+| Idea | Where it lives now |
+|---|---|
+| Marker-pointer layout, `[CLS] type question: instructions [SEP] [MASK]opt0 [MASK]opt1 ... [SEP] state [SEP]` | `verdict2/data.py::build_item` |
+| Scoring an MLP over each `[MASK]` hidden state to get one logit per option | `verdict2/model.py::VerdictModel.scorer` |
+| Training against soft teacher distributions with proper scoring rules | `verdict2/losses.py::decision_loss` |
+| Ranked probability score for ordinal Score questions | `verdict2/losses.py::ranked_probability_score` |
+| Per-bucket temperature scaling | `verdict2/train.py::fit_temperature`, keyed on (qtype, cardinality) |
+| The `act_head` idea of reading confidence off distribution shape | Extended into `verdict2/model.py::CorrectnessHead` |
+
+Taken from Kev (Qwen2.5-0.5B, block-causal branch mask, 104-line model):
+
+| Idea | Where it lives now |
+|---|---|
+| Sanitizing caller text so it cannot forge a delimiter or marker token | `verdict2/data.py`, every user string has the mask token stripped |
+| Permutation-KL training, symmetric KL between two option orderings | `verdict2/losses.py::permutation_kl`, wired in `train.py` behind `--perm_kl` |
+| The full permutation measurement suite, not only a flip rate | `verdict2/evaluate.py::permutation_stability` |
+| Loud failure on truncation rather than a silent drop | `verdict2/data.py::load_items` counts and warns |
+| Cross-entropy plus an ordinal regularizer rather than a cumulative link model | `verdict2/losses.py` |
+
+Deliberately not taken from Kev: its abstention and distractor augmentation (`p_none`,
+`p_distract`). This benchmark has no abstention option, and Kev's own measurements show its
+"none of the above" behaviour is correct anyway, so the premise for that work was wrong.
+
+Deliberately not taken from Laya: re-encoding once per question. Laya's latency is linear in
+question count (38ms for 1, 156ms for 10, 721ms for 50). Batching the five questions of a case in
+one pass is where our latency win comes from.
+
+## How we beat each of them
+
+| Competitor | Their weakness, measured | Our answer |
+|---|---|---|
+| Laya, 0.766 accuracy | ECE 0.214, the worst calibration of the three | Two output channels, so the distribution can match the panel while confidence tracks hit rate |
+| Jev 1.13.0 | ECE 0.144 and 710ms per case | Same two-channel design, plus a 150M to 396M local encoder |
+| Kev | 7.41% argmax flip rate under option reordering | `--perm_kl` training plus the same measurement, reported against Kev's numbers |
+
+Beating all three at once means winning on calibration and order stability, not on raw accuracy.
+Accuracy above roughly 0.78 runs into teacher label noise, per fact 2 above.
+
 ## Invariants
 
 1. No open-ended text generation. The model evaluates typed primitives only.

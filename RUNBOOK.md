@@ -87,6 +87,15 @@ batch stays the same, so results should not move.
 
 Gate before touching the test split: dev accuracy at or above 0.760 and dev Brier at or below 0.120.
 
+## 4b. Order invariance, the Kev comparison
+
+`--perm_kl` adds a symmetric KL between the same question scored under two option orderings, which
+is Kev's technique. Kev still records a 7.41% argmax flip rate with it. `verdict2/evaluate.py`
+reports the same three numbers Kev publishes (argmax flip rate, mean probability spread, p90 spread)
+with Kev's values inlined as `kev_reference`, so the comparison needs no external lookup.
+
+It defaults to 0.5. Sweep it in step 5 and keep whichever value wins on dev.
+
 ## 5. Sweep the loss weights, on dev only
 
 The objective mixes soft cross-entropy, a Brier term, and a small hard-label term. The starting
@@ -96,6 +105,11 @@ weights are a guess, so settle them with measurements:
 for b in 0.0 0.25 0.5 1.0; do
   python -m verdict2.train --backbone answerdotai/ModernBERT-base --epochs 6 \
     --lambda_brier $b --out artifacts/sweep-brier-$b
+done
+
+for k in 0.0 0.5 1.0; do
+  python -m verdict2.train --backbone answerdotai/ModernBERT-base --epochs 6 \
+    --perm_kl $k --out artifacts/sweep-permkl-$k
 done
 ```
 
@@ -121,7 +135,7 @@ Publish these together, never a subset:
 - accuracy, soft accuracy, Brier, score MAE, within-one-level
 - both calibration numbers: `ece_distribution` (the stock harness metric, on `max p`) and
   `ece_confidence` (the correctness head). Quoting only the second reads as metric gaming.
-- permutation argmax flip rate
+- the full permutation stability block, which carries Kev's numbers inline for comparison
 - the reference floors from `reports/reference_floors.json` in the same table
 
 The floors matter because a TF-IDF baseline on this benchmark already reaches about 0.65 accuracy

@@ -22,8 +22,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from .data import Item, collate, load_items, split_by_case
-from .losses import decision_loss
+from .data import Item, collate, load_items, permuted_twin, split_by_case
+from .losses import decision_loss, permutation_kl
 from .metrics import summarize
 from .model import CorrectnessHead, VerdictModel, apply_temperature
 
@@ -159,6 +159,10 @@ def main() -> None:
     parser.add_argument("--lambda_brier", type=float, default=0.5)
     parser.add_argument("--lambda_hard", type=float, default=0.25)
     parser.add_argument("--lambda_rps", type=float, default=1.0)
+    parser.add_argument("--perm_kl", type=float, default=0.5,
+                        help="Weight on symmetric KL between two option orderings. Trains order invariance, "
+                             "which evaluate.py then measures as the argmax flip rate. Set 0 to disable.")
+    parser.add_argument("--perm_frac", type=float, default=0.3, help="Fraction of steps that get the twin forward pass.")
     parser.add_argument("--limit", type=int, default=None, help="Cap training cases, for smoke tests.")
     parser.add_argument("--device", default=None)
     parser.add_argument("--fp16", action="store_true", help="Mixed precision. Use on CUDA; Turing (GTX 16xx) has no bf16.")
@@ -226,14 +230,35 @@ def main() -> None:
     for epoch in range(args.epochs):
         model.train()
         running, seen, step = 0.0, 0, 0
+        perm_running, perm_steps = 0.0, 0
         optimizer.zero_grad()
-        for i, (batch, _) in enumerate(batches(folds["fit"], args.batch_size, pad_id, True, rng)):
+        for i, (batch, chunk) in enumerate(batches(folds["fit"], args.batch_size, pad_id, True, rng)):
             dev_batch = to_device(batch, device)
             with torch.amp.autocast("cuda", dtype=torch.float16, enabled=use_amp):
                 logits = model.option_logits(dev_batch)
                 loss = decision_loss(logits, dev_batch, args.lambda_brier, args.lambda_hard, args.lambda_rps)
             if not torch.isfinite(loss):
                 raise ValueError("non-finite training loss")
+            if args.perm_kl > 0 and rng.random() < args.perm_frac:
+                # Only choice questions with 3 or more options can be meaningfully reordered, so the
+                # twins are a subset of the batch. Track their original row indices explicitly.
+                pairs = []
+                for row_index, item in enumerate(chunk):
+                    built = permuted_twin(tokenizer, item, rng)
+                    if built is not None:
+                        pairs.append((row_index, built[0], built[1]))
+                if pairs:
+                    rows = torch.tensor([p[0] for p in pairs], device=device, dtype=torch.long)
+                    twin_batch = to_device(collate([p[1] for p in pairs], pad_id), device)
+                    orders = [p[2] for p in pairs]
+                    with torch.amp.autocast("cuda", dtype=torch.float16, enabled=use_amp):
+                        twin_logits = model.option_logits(twin_batch)
+                        width = min(logits.size(1), twin_logits.size(1))
+                        kl = permutation_kl(logits[rows, :width], twin_logits[:, :width], orders)
+                    loss = loss + args.perm_kl * kl
+                    perm_running += float(kl.detach())
+                    perm_steps += 1
+
             scaler.scale(loss / args.accum).backward()
             running += float(loss.detach())
             seen += 1
@@ -252,7 +277,7 @@ def main() -> None:
         print(
             f"epoch {epoch + 1}/{args.epochs} loss {running / max(seen, 1):.4f} "
             f"dev_acc {dev_metrics['accuracy']:.4f} dev_brier {dev_metrics['brier']:.4f} "
-            f"({time.time() - start:.0f}s)"
+            f"permKL {perm_running / max(perm_steps, 1):.3f} ({time.time() - start:.0f}s)"
         )
         if dev_metrics["accuracy"] > best["accuracy"]:
             best = dev_metrics

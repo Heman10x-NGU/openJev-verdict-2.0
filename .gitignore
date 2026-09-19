@@ -21,9 +21,8 @@ node_modules/
 :memory:.ses
 verification-worktree/
 
-# Internal research notes, prompts, agent instructions, and planning docs (local only)
-/0*.md
-/AGENTS.md
+# Local-only scratch. This repo is PRIVATE, so AGENTS.md, plans/ and the numbered v1
+# archive docs are tracked on purpose: an agent on another machine continues from them.
 /tweets/
 /reports/astra-review-2026-09-17/
 /NEW-BUILD-PROPOSAL-2026-09-17/

@@ -1,0 +1,51 @@
+/* Hotfix for the dashboard hero.
+ *
+ * docs/index.html carries a global rule:
+ *     svg { display:block; width:100%; min-width:560px; height:auto; }
+ * It is meant for the charts, but it also matches the 14x14 inline GitHub icon in the header,
+ * stretching it to 560x560 and pushing the H1 down to y=730. The same min-width forces every SVG
+ * to 560px, which overflows any viewport under about 600px, and most launch traffic is mobile.
+ *
+ * Load this AFTER the existing stylesheet, or paste the rules into the <style> block.
+ */
+
+/* charts keep the old behaviour */
+.chart-scroll svg,
+figure svg,
+svg.chart {
+  display: block;
+  width: 100%;
+  min-width: 560px;
+  height: auto;
+}
+
+/* inline icons honour their own width and height attributes again */
+svg {
+  display: inline;
+  width: auto;
+  min-width: 0;
+  height: auto;
+}
+
+a svg,
+button svg,
+header svg,
+.badge svg {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  min-width: 0;
+  vertical-align: -2px;
+  flex: none;
+}
+
+/* charts stay readable on a phone by scrolling inside their own box */
+@media (max-width: 640px) {
+  .chart-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body {
+    overflow-x: hidden;
+  }
+}

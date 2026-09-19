@@ -312,7 +312,7 @@
       <div class="kpi lead">
         <div class="v mono">89.0%</div>
         <div class="k">Accuracy at 60% coverage</div>
-        <div class="s">0.7664 test AUROC (0.7861 dev) for routing</div>
+        <div class="s">AUROC 0.7664 test discrimination for routing</div>
       </div>
       <div class="kpi lead">
         <div class="v mono">&lt;150M</div>
@@ -340,7 +340,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Verdict 1.0 baseline</td><td>151M</td><td>26.10%</td><td>0.5851</td><td>0.4209</td><td class="dim">—</td><td class="dim">—</td></tr>
+          <tr><td>Verdict 1.0 baseline</td><td>149.6M</td><td>26.10%</td><td>0.5851</td><td>0.4209</td><td class="dim">—</td><td class="dim">—</td></tr>
           <tr><td>TF-IDF + logistic regression</td><td class="dim">—</td><td>66.10%</td><td>0.1520</td><td>0.0207</td><td class="dim">—</td><td>0.00%</td></tr>
           <tr><td>Jev 1.13.0 <sup>†</sup></td><td>~150M</td><td>72.70%</td><td>0.1480</td><td>0.1440</td><td class="dim">—</td><td class="dim">—</td></tr>
           <tr><td>Laya (ModernBERT-large)</td><td>421.3M</td><td>76.60%</td><td>0.0660</td><td>0.2140</td><td class="dim">—</td><td class="dim">—</td></tr>
@@ -523,8 +523,8 @@ reported ece_distribution                                 = <b>0.1513</b></pre>
       </div>
       <div class="cell">
         <div class="lab">Selective routing</div>
-        <h3>0.7664 AUROC automated gates</h3>
-        <p>The confidence head achieves 0.7664 AUROC on 2,000 held-out test decisions (0.7861 on dev). In automated pipelines, gating decisions at 80% coverage lifts test accuracy to 83.44% (85.00% on dev); gating at 60% coverage delivers 89.00% accuracy (90.21% on dev) for human-in-the-loop escalation.</p>
+        <h3>AUROC 0.7664 automated gates</h3>
+        <p>The confidence head achieves 0.7664 AUROC on 2,000 held-out test decisions. In automated pipelines, gating decisions at 80% coverage lifts accuracy to 83.44%; gating at 60% coverage delivers 89.00% accuracy, and 50% coverage delivers 91.40% for reliable human-in-the-loop escalation.</p>
       </div>
     </div>
   </section>
@@ -536,7 +536,7 @@ reported ece_distribution                                 = <b>0.1513</b></pre>
       <div class="kpi"><div class="v mono">6 GB</div><div class="k">GTX 1660 Ti</div><div class="s">Turing TU116 — no tensor cores</div></div>
       <div class="kpi"><div class="v mono">31,757 s</div><div class="k">Wall clock, 8 epochs</div><div class="s">Best checkpoint at epoch 6</div></div>
       <div class="kpi"><div class="v mono">~5.8 GB</div><div class="k">Peak VRAM</div><div class="s">Of 6.0 GB available</div></div>
-      <div class="kpi"><div class="v mono">24.7/s</div><div class="k">Inference throughput</div><div class="s">~20 ms per decision, same card</div></div>
+      <div class="kpi"><div class="v mono">24.7/s</div><div class="k">Inference throughput</div><div class="s">~40 ms per decision, same card</div></div>
     </div>
     <p class="foot prose">
       The result outperforms a 421M-parameter model on the benchmark that model was published against.

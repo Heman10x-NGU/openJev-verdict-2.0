@@ -310,9 +310,9 @@
         <div class="s">421.3M &#8594; 149.6M, and still ahead</div>
       </div>
       <div class="kpi lead">
-        <div class="v mono">90.2%</div>
+        <div class="v mono">89.0%</div>
         <div class="k">Accuracy at 60% coverage</div>
-        <div class="s">AUROC 0.7861 discrimination for routing</div>
+        <div class="s">0.7664 test AUROC (0.7861 dev) for routing</div>
       </div>
       <div class="kpi lead">
         <div class="v mono">&lt;150M</div>
@@ -523,8 +523,8 @@ reported ece_distribution                                 = <b>0.1513</b></pre>
       </div>
       <div class="cell">
         <div class="lab">Selective routing</div>
-        <h3>AUROC 0.7861 automated gates</h3>
-        <p>The confidence head achieves 0.7861 AUROC at discriminating correct decisions from errors. In automated pipelines, gating decisions at 80% coverage lifts accuracy to 85.00%; gating at 60% coverage delivers 90.21% accuracy for human-in-the-loop escalation.</p>
+        <h3>0.7664 AUROC automated gates</h3>
+        <p>The confidence head achieves 0.7664 AUROC on 2,000 held-out test decisions (0.7861 on dev). In automated pipelines, gating decisions at 80% coverage lifts test accuracy to 83.44% (85.00% on dev); gating at 60% coverage delivers 89.00% accuracy (90.21% on dev) for human-in-the-loop escalation.</p>
       </div>
     </div>
   </section>

@@ -54,13 +54,15 @@ Soft-labeled benchmarks create an inherent mathematical dilemma:
 - If a model sharpens its probabilities to match accuracy, it diverges from the panel and degrades Brier loss (**Jev's trap: ECE 0.1440, Brier 0.1480**).
 - **openJev-verdict-2.0 solves this by decoupling into dual channels**:
   - **Channel 1 (Distribution Head)**: Marker-pointer logits scoring **0.0636 Brier** (and 0.1513 distribution ECE, beating Laya's 0.2140 by 29%).
-  - **Channel 2 (Correctness Head)**: Dedicated MLP trained out-of-fold over prediction geometry (entropy, margin, cardinality), achieving **1.44% ECE (0.0144)** and **0.7861 AUROC**.
+  - **Channel 2 (Correctness Head)**: Dedicated MLP trained out-of-fold over prediction geometry (entropy, margin, cardinality), achieving **1.44% ECE (0.0144)** and **0.7664 AUROC** on held-out test decisions (0.7861 on dev).
 
 ### 3. Selective Classification & Automated Gating
-The confidence head enables reliable human-in-the-loop escalation policies in deterministic software:
-- **At 80% coverage**: Model accuracy rises to **85.00%**.
-- **At 60% coverage**: Model accuracy reaches **90.21%**.
-Deterministic code can automate high-confidence decisions and escalate low-confidence uncertainty to human operators without false-positive surprises.
+The confidence head enables reliable human-in-the-loop escalation policies in deterministic software. On 2,000 held-out test decisions:
+- **At 80% coverage**: Model accuracy rises to **83.44%** (85.00% on dev).
+- **At 60% coverage**: Model accuracy reaches **89.00%** (90.21% on dev).
+- **At 50% coverage**: Model accuracy reaches **91.40%**.
+- **At 30% coverage**: Model accuracy reaches **95.17%**.
+Deterministic code can automate high-confidence decisions and escalate low-confidence uncertainty to human operators without false-positive surprises. Every curve point is reproducible via `verdict2.evaluate` and archived in `reports/verdict2_base_test.json`.
 
 ### 4. Symmetric Permutation-KL (Crushing Prompt-Order Bias)
 Autoregressive decoders suffer from order bias: shuffling option order (A/B/C vs C/B/A) flips decisions frequently (Kev-0.5B: 7.41% flip rate).

@@ -2,7 +2,7 @@
   "model": "Verdict-2.0 (answerdotai/ModernBERT-base)",
   "benchmark": "LocalLLaMA/typed-decisions",
   "split": "test",
-  "device": "cuda",
+  "device": "cpu",
   "total_decisions": 2000,
   "metrics": {
     "n": 2000,
@@ -11,10 +11,102 @@
     "brier": 0.0636,
     "ece_distribution": 0.1513,
     "ece_confidence": 0.0144,
+    "auroc_confidence": 0.7664,
+    "auroc_distribution": 0.7567,
     "score_mae": 0.2409,
     "within_one_level": 0.99,
     "mean_distribution_confidence": 0.6197,
-    "mean_head_confidence": 0.7626
+    "mean_head_confidence": 0.7626,
+    "acc_at_100_coverage": 0.771,
+    "acc_at_90_coverage": 0.8028,
+    "acc_at_80_coverage": 0.8344,
+    "acc_at_70_coverage": 0.8593,
+    "acc_at_60_coverage": 0.89,
+    "acc_at_50_coverage": 0.914,
+    "acc_at_40_coverage": 0.9363,
+    "acc_at_30_coverage": 0.9517,
+    "selective_classification": [
+      {
+        "target_coverage": 1.0,
+        "actual_coverage": 1.0,
+        "retained_accuracy": 0.771,
+        "selective_risk": 0.229,
+        "risk_upper_bound_95": 0.2479,
+        "threshold": 0.2834,
+        "accepted_count": 2000,
+        "errors": 458
+      },
+      {
+        "target_coverage": 0.9,
+        "actual_coverage": 0.9,
+        "retained_accuracy": 0.8028,
+        "selective_risk": 0.1972,
+        "risk_upper_bound_95": 0.2162,
+        "threshold": 0.53,
+        "accepted_count": 1800,
+        "errors": 355
+      },
+      {
+        "target_coverage": 0.8,
+        "actual_coverage": 0.8,
+        "retained_accuracy": 0.8344,
+        "selective_risk": 0.1656,
+        "risk_upper_bound_95": 0.1846,
+        "threshold": 0.623,
+        "accepted_count": 1600,
+        "errors": 265
+      },
+      {
+        "target_coverage": 0.7,
+        "actual_coverage": 0.7,
+        "retained_accuracy": 0.8593,
+        "selective_risk": 0.1407,
+        "risk_upper_bound_95": 0.1599,
+        "threshold": 0.6789,
+        "accepted_count": 1400,
+        "errors": 197
+      },
+      {
+        "target_coverage": 0.6,
+        "actual_coverage": 0.6,
+        "retained_accuracy": 0.89,
+        "selective_risk": 0.11,
+        "risk_upper_bound_95": 0.129,
+        "threshold": 0.738,
+        "accepted_count": 1200,
+        "errors": 132
+      },
+      {
+        "target_coverage": 0.5,
+        "actual_coverage": 0.5,
+        "retained_accuracy": 0.914,
+        "selective_risk": 0.086,
+        "risk_upper_bound_95": 0.105,
+        "threshold": 0.7874,
+        "accepted_count": 1000,
+        "errors": 86
+      },
+      {
+        "target_coverage": 0.4,
+        "actual_coverage": 0.4,
+        "retained_accuracy": 0.9363,
+        "selective_risk": 0.0637,
+        "risk_upper_bound_95": 0.0829,
+        "threshold": 0.8326,
+        "accepted_count": 800,
+        "errors": 51
+      },
+      {
+        "target_coverage": 0.3,
+        "actual_coverage": 0.3,
+        "retained_accuracy": 0.9517,
+        "selective_risk": 0.0483,
+        "risk_upper_bound_95": 0.0686,
+        "threshold": 0.8792,
+        "accepted_count": 600,
+        "errors": 29
+      }
+    ]
   },
   "permutation_stability": {
     "argmax_flip_rate": 0.0476,
@@ -27,7 +119,7 @@
       "p90_prob_spread": 0.2486
     }
   },
-  "throughput_decisions_per_second": 24.7,
+  "throughput_decisions_per_second": 6.4,
   "workflows": {
     "agent_trace_observability": {
       "decisions": 500,

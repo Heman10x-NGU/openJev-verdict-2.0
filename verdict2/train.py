@@ -72,10 +72,13 @@ def infer(model: VerdictModel, items: List[Item], pad_id: int, device: str, batc
         feats = CorrectnessHead.features(probs, dev_batch["marker_mask"], dev_batch["qtype"])
         confidence = torch.sigmoid(model.correctness(feats))
 
+        probs_np = probs.float().cpu().numpy()
+        confidence_np = confidence.cpu().numpy()
+
         for row, item in enumerate(chunk):
             width = len(item.markers)
-            p = probs[row, :width].float().cpu().numpy()
-            p = p / max(p.sum(), 1e-9)
+            p = probs_np[row, :width]
+            p = p / max(float(p.sum()), 1e-9)
             expected = float(sum(i * p[i] for i in range(width)))
             records.append(
                 {
@@ -86,7 +89,7 @@ def infer(model: VerdictModel, items: List[Item], pad_id: int, device: str, batc
                     "probs": p.tolist(),
                     "target": list(item.target),
                     "label_index": item.label,
-                    "confidence": float(confidence[row].cpu()),
+                    "confidence": float(confidence_np[row]),
                     "expected_level": expected,
                     "gold_score": item.gold_score,
                 }

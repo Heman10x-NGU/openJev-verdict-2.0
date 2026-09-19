@@ -6,8 +6,12 @@ Replicates and improves upon the viral 4-panel benchmark graphic format:
 - Panel 3 (Bottom-Left): Calibration Error (ECE) & Order Stability
 - Panel 4 (Bottom-Right): Selective Automation (Accuracy vs Coverage Curve)
 
-Engineered with perfect alignment, zero text/bar overlap, zero AI slop, verified numbers.
-Generates both Matte Graphite (Dark) and Ivory Paper (Light) editions.
+Eradicates all tell-tale AI slop and visual errors:
+- Distinct signature palette: Verdict 2.0 rendered in Rich Emerald Teal (#047857 / #10b981)
+  to ensure 100% visual contrast against Laya's Royal Blue (#2563eb) and Jev's Slate (#94a3b8)
+- Zero text collisions: Re-anchored the 5% enterprise safety threshold to avoid bar label overlap
+- Precise annotations, verified numbers, and publication-standard data-ink ratio
+- Generates both Matte Graphite (Dark) and Ivory Paper (Light) editions.
 """
 
 from pathlib import Path
@@ -29,46 +33,50 @@ THEMES = {
         "surface": "#151821",
         "border": "#252936",
         "grid": "#1f2430",
-        "accent": "#3b82f6",         # Verdict 2.0 Primary Blue
-        "accent_bright": "#60a5fa",
-        "comp_jev": "#ef4444",       # Jev Red/Coral
-        "comp_jev_alt": "#f97316",   # Jev Orange
-        "comp_laya": "#2563eb",      # Laya Royal Blue
-        "comp_laya_light": "#60a5fa",
-        "comp_kev": "#8b5cf6",       # Kev Purple
+        "accent": "#10b981",          # Verdict 2.0 Signature Vibrant Mint/Emerald
+        "accent_bright": "#34d399",
+        "accent_deep": "#059669",
+        "accent_text": "#6ee7b7",
+        "comp_jev": "#ef4444",        # Jev Red/Coral
+        "comp_jev_alt": "#f97316",    # Jev Orange
+        "comp_jev_slate": "#94a3b8",  # Jev Slate Gray
+        "comp_laya": "#3b82f6",       # Laya Royal Blue
+        "comp_laya_light": "#93c5fd",
+        "comp_kev": "#8b5cf6",        # Kev Purple
         "text_title": "#f8fafc",
         "text_body": "#e2e8f0",
         "text_muted": "#94a3b8",
         "text_faint": "#64748b",
-        "accent_text": "#93c5fd",
         "card_bg": "#12151d",
-        "callout_bg": "#1e293b",
-        "callout_border": "#3b82f6",
-        "curve_laya": "#10b981",     # Laya Green curve from original
-        "curve_verdict": "#3b82f6"   # Verdict 2.0 Blue curve
+        "callout_bg": "#152422",
+        "callout_border": "#10b981",
+        "curve_laya": "#3b82f6",      # Laya Royal Blue curve
+        "curve_verdict": "#10b981"    # Verdict 2.0 Mint/Emerald curve
     },
     "light": {
         "bg": "#ffffff",
         "surface": "#ffffff",
         "border": "#d1d5db",
         "grid": "#f3f4f6",
-        "accent": "#1d4ed8",         # Verdict 2.0 Deep Blue
-        "accent_bright": "#2563eb",
-        "comp_jev": "#dc2626",       # Jev Red
-        "comp_jev_alt": "#ea580c",   # Jev Orange
-        "comp_laya": "#3b82f6",      # Laya Blue
-        "comp_laya_light": "#93c5fd",
-        "comp_kev": "#7c3aed",       # Kev Purple
+        "accent": "#047857",          # Verdict 2.0 Signature Deep Emerald (Extremely distinct from blue/gray)
+        "accent_bright": "#059669",
+        "accent_deep": "#065f46",
+        "accent_text": "#047857",
+        "comp_jev": "#dc2626",        # Jev Red
+        "comp_jev_alt": "#ea580c",    # Jev Orange
+        "comp_jev_slate": "#94a3b8",  # Jev Slate Gray
+        "comp_laya": "#2563eb",       # Laya Royal Blue
+        "comp_laya_light": "#60a5fa",
+        "comp_kev": "#7c3aed",        # Kev Purple
         "text_title": "#111827",
         "text_body": "#1f2937",
         "text_muted": "#4b5563",
         "text_faint": "#6b7280",
-        "accent_text": "#1d4ed8",
         "card_bg": "#ffffff",
-        "callout_bg": "#eff6ff",
-        "callout_border": "#3b82f6",
-        "curve_laya": "#059669",     # Laya Green curve from original
-        "curve_verdict": "#1d4ed8"   # Verdict 2.0 Blue curve
+        "callout_bg": "#ecfdf5",      # Subtle emerald-tinted callout
+        "callout_border": "#059669",
+        "curve_laya": "#2563eb",      # Laya Royal Blue curve
+        "curve_verdict": "#047857"    # Verdict 2.0 Deep Emerald curve
     }
 }
 
@@ -100,7 +108,10 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
     # =========================================================================
     ax1 = create_panel(0.06, 0.52, 0.41, 0.38, "Inference Latency: 1 Q and Batched Execution")
     
-    # Direct comparison items
+    # Direct comparison items with distinct colors:
+    # Jev: Red / Orange
+    # Laya: Royal Blue
+    # Verdict 2.0: Deep Emerald / Mint Teal
     bars_data = [
         ("Jev\n(1 Q, avg)", 400.0, t["comp_jev"], "400.0 ms"),
         ("Jev\n(5 Q case)", 710.0, t["comp_jev_alt"], "710.0 ms"),
@@ -131,16 +142,16 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
         ax1.text(bar.get_x() + bar.get_width()/2, h + 15, d[3],
                  ha="center", va="bottom", fontsize=8, fontweight="bold", color=t["text_body"])
 
-    # Callout annotation 1: 48.7x faster than Jev, placed cleanly above Verdict 1Q bar
+    # Callout annotation 1: 48.7x faster than Jev, centered cleanly above Verdict 1Q bar
     ax1.annotate("48.7x Faster than Jev\n4.7x Faster than Laya",
-                 xy=(5, 12.0), xytext=(4.3, 370),
+                 xy=(5.0, 15.0), xytext=(5.0, 370),
                  arrowprops=dict(facecolor=t["accent"], edgecolor=t["accent"], width=1.5, headwidth=6, shrink=0.08),
                  bbox=dict(boxstyle="round,pad=0.4", fc=t["callout_bg"], ec=t["callout_border"], lw=1.2),
                  fontsize=8.5, fontweight="bold", color=t["text_title"], ha="center", zorder=10)
 
     # Callout annotation 2: 28.4x faster on 5Q case
     ax1.annotate("28.4x Faster\n(25ms vs 710ms)",
-                 xy=(6, 30.0), xytext=(6.5, 480),
+                 xy=(6.0, 32.0), xytext=(6.7, 480),
                  arrowprops=dict(facecolor=t["accent"], edgecolor=t["accent"], width=1.5, headwidth=6, shrink=0.08),
                  bbox=dict(boxstyle="round,pad=0.4", fc=t["callout_bg"], ec=t["callout_border"], lw=1.2),
                  fontsize=8.2, fontweight="bold", color=t["text_title"], ha="center", zorder=10)
@@ -159,14 +170,18 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
     index = np.arange(n_groups)
     bar_w = 0.25
     
-    b_jev = ax2.bar(index - bar_w, jev_scores, bar_w, label="TypeSafe Jev (Published)", color="#94a3b8", edgecolor=t["border"], zorder=3)
+    # DISTINCT PALETTE:
+    # Jev: Slate Gray (#94a3b8)
+    # Laya: Royal Blue (#2563eb)
+    # Verdict 2.0: Deep Emerald / Mint Teal (#047857 / #10b981) -> COMPLETELY DISTINCT!
+    b_jev = ax2.bar(index - bar_w, jev_scores, bar_w, label="TypeSafe Jev (Published)", color=t["comp_jev_slate"], edgecolor=t["border"], zorder=3)
     b_laya = ax2.bar(index, laya_scores, bar_w, label="Laya (ModernBERT-large, 421M)", color=t["comp_laya"], edgecolor=t["border"], zorder=3)
     b_verdict = ax2.bar(index + bar_w, verdict_scores, bar_w, label="Verdict 2.0 (ModernBERT-base, 150M)", color=t["accent"], edgecolor=t["border"], zorder=3)
     
     ax2.set_ylabel("Accuracy (%)", fontsize=10, fontweight="bold", color=t["text_title"])
     ax2.set_xticks(index)
     ax2.set_xticklabels(categories, fontsize=8.2, color=t["text_body"])
-    ax2.set_ylim(0, 126)  # Expanded headroom so legend doesn't overlap
+    ax2.set_ylim(0, 126)  # Expanded headroom so legend doesn't overlap bars
     ax2.grid(axis="y", linestyle="--", alpha=0.5, color=t["grid"], zorder=0)
     ax2.tick_params(colors=t["text_faint"])
     ax2.legend(loc="upper left", framealpha=0.95, facecolor=t["card_bg"], edgecolor=t["border"], fontsize=8.2)
@@ -181,11 +196,11 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
             
     for b in b_laya:
         h = b.get_height()
-        ax2.text(b.get_x() + b.get_width()/2, h + 1.8, f"{h:.1f}%", ha="center", va="bottom", fontsize=7.2, fontweight="bold", color=t["text_body"])
+        ax2.text(b.get_x() + b.get_width()/2, h + 1.8, f"{h:.1f}%", ha="center", va="bottom", fontsize=7.2, fontweight="bold", color=t["comp_laya"])
         
     for b in b_verdict:
         h = b.get_height()
-        ax2.text(b.get_x() + b.get_width()/2, h + 1.8, f"{h:.1f}%", ha="center", va="bottom", fontsize=7.2, fontweight="bold", color=t["accent_bright"] if theme_key == "dark" else t["accent"])
+        ax2.text(b.get_x() + b.get_width()/2, h + 1.8, f"{h:.1f}%", ha="center", va="bottom", fontsize=7.4, fontweight="bold", color=t["accent_bright"] if theme_key == "dark" else t["accent"])
 
     # =========================================================================
     # PANEL 3: Calibration & Order Invariance (Bottom-Left)
@@ -210,18 +225,23 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
     ax3.invert_yaxis()
     ax3.set_xlabel("Expected Calibration Error (% ECE, Lower is Better)", fontsize=10, fontweight="bold", color=t["text_title"])
     ax3.set_xlim(0, 26)
+    ax3.set_ylim(len(models_ece) - 0.3, -0.6)  # Generous headroom for threshold label
     ax3.grid(axis="x", linestyle="--", alpha=0.5, color=t["grid"], zorder=0)
     ax3.tick_params(colors=t["text_faint"])
     
     # 5% target threshold line
-    ax3.axvline(x=5.0, color="#10b981", linestyle=":", linewidth=1.5, zorder=4)
-    ax3.text(5.2, 4.1, "5% Enterprise Safety Floor", fontsize=7.5, color="#10b981", fontweight="bold")
+    ax3.axvline(x=5.0, color="#059669" if theme_key == "light" else "#10b981", linestyle=":", linewidth=1.5, zorder=4)
+    
+    # RE-ANCHORED THRESHOLD TEXT: Placed cleanly at the top (y = -0.4) so it NEVER collides with bar text!
+    ax3.text(5.2, -0.38, "5% Enterprise Safety Floor", fontsize=7.8,
+             color="#059669" if theme_key == "light" else "#10b981", fontweight="bold", zorder=5)
 
+    # Clean, non-overlapping bar text
     for bar, val in zip(bars3, vals_ece):
         w = bar.get_width()
         txt = f"{val:.2f}%"
         if val == 1.44:
-            txt += "  [15x Tighter Calibration]"
+            txt += "  (15x Tighter Calibration)"
         ax3.text(w + 0.4, bar.get_y() + bar.get_height()/2, txt,
                  va="center", fontsize=8.2, fontweight="bold",
                  color=t["accent_bright"] if val == 1.44 and theme_key == "dark" else (t["accent"] if val == 1.44 else t["text_body"]))
@@ -254,9 +274,12 @@ def generate_showdown_card(theme_key="dark", filename="verdict2_vs_laya_jev_show
     # Verdict 2.0 measured selective classification curve (AUROC = 0.7861)
     verdict_curve = np.array([95.8, 94.1, 92.25, 90.21, 87.80, 85.00, 81.30, 78.50])
     
-    ax4.plot(coverage, laya_curve, marker="o", color=t["curve_laya"], linewidth=2.0, markersize=5,
+    # DISTINCT CURVES:
+    # Laya: Royal Blue line with circular markers
+    # Verdict 2.0: Rich Emerald Teal line with square markers (thick, prominent)
+    ax4.plot(coverage, laya_curve, marker="o", color=t["curve_laya"], linewidth=1.8, markersize=5,
              label="Laya Large (421M, uncalibrated)", zorder=4)
-    ax4.plot(coverage, verdict_curve, marker="s", color=t["curve_verdict"], linewidth=2.2, markersize=5,
+    ax4.plot(coverage, verdict_curve, marker="s", color=t["curve_verdict"], linewidth=2.4, markersize=5.5,
              label="Verdict 2.0 Base (150M + Correctness Head)", zorder=5)
     
     # 50% Threshold Gate line

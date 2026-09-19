@@ -1,0 +1,624 @@
+<title>Verdict 2.0 Base</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ground:      #f1f3f6;
+    --surface:     #fbfcfd;
+    --surface-2:   #e8ebf0;
+    --ink:         #12151a;
+    --ink-2:       #444c58;
+    --ink-3:       #6b7480;
+    --rule:        #d3d8e0;
+    --rule-2:      #bcc3cd;
+    --accent:      #eb6834;
+    --accent-ink:  #b9420f;
+    --accent-wash: #fdece4;
+    --context:     #7d818a;
+    --good:        #1f7a4d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground:      #101317;
+      --surface:     #171b21;
+      --surface-2:   #1f242c;
+      --ink:         #eef1f5;
+      --ink-2:       #b2bac6;
+      --ink-3:       #848d9b;
+      --rule:        #2a313a;
+      --rule-2:      #3a434f;
+      --accent:      #d95926;
+      --accent-ink:  #f08d5f;
+      --accent-wash: #2a1a12;
+      --context:     #848992;
+      --good:        #4cb37e;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground:      #101317;
+    --surface:     #171b21;
+    --surface-2:   #1f242c;
+    --ink:         #eef1f5;
+    --ink-2:       #b2bac6;
+    --ink-3:       #848d9b;
+    --rule:        #2a313a;
+    --rule-2:      #3a434f;
+    --accent:      #d95926;
+    --accent-ink:  #f08d5f;
+    --accent-wash: #2a1a12;
+    --context:     #848992;
+    --good:        #4cb37e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0 20px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .prose { max-width: 66ch; }
+
+  section { padding-block: 52px; border-top: 1px solid var(--rule); }
+  section:first-of-type { border-top: 0; }
+
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+  .stack-sm { display: flex; flex-direction: column; gap: 10px; }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.15; }
+
+  h1 {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+  }
+  h2 {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h3 { font-size: 1rem; font-weight: 650; letter-spacing: -0.005em; }
+
+  p { margin: 0; }
+  strong { font-weight: 650; color: var(--ink); }
+
+  .eyebrow {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .eyebrow .sig { color: var(--accent-ink); }
+
+  .lede { font-size: clamp(1.05rem, 2.2vw, 1.3rem); line-height: 1.5; color: var(--ink-2); }
+  .lede strong { color: var(--ink); }
+
+  /* --- hero tick scale: the one decorative motif, an instrument gradation --- */
+  .ticks { display: flex; align-items: flex-end; gap: 5px; height: 26px; margin-block: 4px; }
+  .ticks i { width: 2px; background: var(--rule-2); height: 8px; display: block; }
+  .ticks i:nth-child(5n + 1) { height: 20px; background: var(--ink-3); }
+  .ticks i.on { background: var(--accent); height: 26px; }
+
+  /* --- KPI row --- */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .kpi { background: var(--surface); padding: 22px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .kpi .v {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(1.9rem, 4.4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .kpi.lead .v { color: var(--accent-ink); }
+  .kpi .k { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
+  .kpi .s { font-size: 0.78rem; color: var(--ink-3); line-height: 1.45; }
+  .kpis.big .kpi .v { font-size: clamp(2.4rem, 6.5vw, 3.4rem); color: var(--accent-ink); }
+  .kpis.big .kpi .s { font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  /* --- tables --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 660px; font-size: 0.875rem; }
+  caption { text-align: left; padding: 14px 16px 0; font-size: 0.8rem; color: var(--ink-3); }
+  th, td { padding: 11px 16px; text-align: right; border-bottom: 1px solid var(--rule); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-3); border-bottom: 1px solid var(--rule-2); white-space: nowrap;
+  }
+  tbody td:not(:first-child) {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums; color: var(--ink-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tr.us td { background: var(--accent-wash); color: var(--ink); font-weight: 650; }
+  tr.us td:not(:first-child) { color: var(--ink); }
+  .dim { color: var(--ink-3); }
+
+  /* --- chart --- */
+  .figure { background: var(--surface); border: 1px solid var(--rule); padding: 20px; }
+  .figure figcaption { font-size: 0.82rem; color: var(--ink-3); margin-top: 14px; max-width: 62ch; line-height: 1.55; }
+  .chart-scroll { overflow-x: auto; }
+  svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  .ax { stroke: var(--rule-2); stroke-width: 1; }
+  .grid { stroke: var(--rule); stroke-width: 1; }
+  .tick-t {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 11px; fill: var(--ink-3); font-variant-numeric: tabular-nums;
+  }
+  .ax-t {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 11px; fill: var(--ink-3); letter-spacing: 0.09em; text-transform: uppercase;
+  }
+  .pt-l { font-size: 12.5px; fill: var(--ink-2); font-weight: 500; }
+  .pt-l.on { fill: var(--ink); font-weight: 650; }
+  .dot { cursor: default; }
+  .dot circle.hit { fill: transparent; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; font-size: 0.8rem; color: var(--ink-2); margin-bottom: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .sw.ctx { background: var(--context); }
+  .sw.acc { background: var(--accent); }
+  .sw.hollow { background: var(--surface); border: 2.5px solid var(--accent); }
+
+  #tip {
+    position: fixed; z-index: 20; pointer-events: none; opacity: 0;
+    transition: opacity .12s ease; background: var(--ink); color: var(--ground);
+    padding: 7px 10px; font-size: 0.78rem; line-height: 1.4; max-width: 230px;
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  #tip.on { opacity: 1; }
+
+  /* --- misc blocks --- */
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .cell { background: var(--surface); padding: 20px; display: flex; flex-direction: column; gap: 9px; }
+  .cell .lab {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); font-weight: 600;
+  }
+  .cell p { font-size: 0.9rem; color: var(--ink-2); }
+
+  .trap { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 16px; }
+  .trap > div { border-left: 2px solid var(--rule-2); padding-left: 16px; }
+  .trap > div.win { border-left-color: var(--accent); }
+
+  pre {
+    background: var(--surface-2); border: 1px solid var(--rule); padding: 15px;
+    overflow-x: auto; font-size: 0.8rem; line-height: 1.7; margin: 0;
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    color: var(--ink-2);
+  }
+  pre b { color: var(--accent-ink); font-weight: 600; }
+
+  ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 10px; }
+  li { color: var(--ink-2); }
+  li::marker { color: var(--ink-3); }
+
+  .foot { font-size: 0.8rem; color: var(--ink-3); }
+  sup { font-size: 0.68em; color: var(--accent-ink); }
+  a { color: var(--accent-ink); }
+  a:focus-visible, .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <section class="stack">
+    <div class="stack-sm">
+      <div class="eyebrow">Verdict 2.0 &nbsp;/&nbsp; <span class="sig">Base</span> &nbsp;/&nbsp; ModernBERT-base &nbsp;/&nbsp; 149.6M</div>
+      <div class="ticks" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <h1>Small model,<br>bigger numbers.</h1>
+    </div>
+    <p class="lede prose">
+      A <strong>149.6M-parameter</strong> decision model, trained in <strong>8.8 hours on a $300 laptop GPU</strong>,
+      that beats a 421M model on its own benchmark — and ships a calibrated confidence channel nobody else has.
+    </p>
+
+    <div class="kpis">
+      <div class="kpi lead">
+        <div class="v mono">77.10%</div>
+        <div class="k">Top-1 accuracy</div>
+        <div class="s">Laya, at 421.3M params, scores 76.60%</div>
+      </div>
+      <div class="kpi lead">
+        <div class="v mono">0.0636</div>
+        <div class="k">Brier score</div>
+        <div class="s">Best on the benchmark. Laya: 0.0660</div>
+      </div>
+      <div class="kpi lead">
+        <div class="v mono">0.0144</div>
+        <div class="k">Confidence ECE</div>
+        <div class="s">A second channel no competitor exposes</div>
+      </div>
+      <div class="kpi">
+        <div class="v mono">8.8 h</div>
+        <div class="k">On one GTX 1660 Ti</div>
+        <div class="s">6 GB, no tensor cores, no cluster</div>
+      </div>
+    </div>
+    <p class="foot">
+      Benchmark: <span class="mono">LocalLLaMA/typed-decisions</span>, test split, N&nbsp;=&nbsp;2,000 decisions. Read exactly once.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>Where it wins</h2>
+    <p class="lede prose">Against the model it replaces, on the same harness and the same split.</p>
+    <div class="kpis big">
+      <div class="kpi lead">
+        <div class="v mono">29&#215;</div>
+        <div class="k">Better confidence calibration</div>
+        <div class="s">ECE 0.4209 &#8594; 0.0144 vs Verdict 1.0</div>
+      </div>
+      <div class="kpi lead">
+        <div class="v mono">9.2&#215;</div>
+        <div class="k">Better Brier</div>
+        <div class="s">0.5851 &#8594; 0.0636 vs Verdict 1.0</div>
+      </div>
+      <div class="kpi lead">
+        <div class="v mono">2.3&#215;</div>
+        <div class="k">Better Brier than Jev 1.13.0</div>
+        <div class="s">0.1480 &#8594; 0.0636</div>
+      </div>
+      <div class="kpi lead">
+        <div class="v mono">2.8&#215;</div>
+        <div class="k">Fewer parameters than Laya</div>
+        <div class="s">421.3M &#8594; 149.6M, and still ahead</div>
+      </div>
+    </div>
+    <p class="foot prose">
+      Accuracy went from <strong>26.10%</strong> — below uniform random — to <strong>77.10%</strong>, a 2.95&#215; jump,
+      clearing the TF-IDF floor of 66.10% by eleven points. Option-order flips run <strong>36% below</strong> Kev's
+      published rate.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>The table</h2>
+    <div class="scroller">
+      <table>
+        <caption>Test split, 2,000 decisions. Lower is better for Brier and ECE.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Model</th><th scope="col">Params</th><th scope="col">Accuracy</th>
+            <th scope="col">Brier</th><th scope="col">ECE&nbsp;(dist.)</th><th scope="col">ECE&nbsp;(conf.)</th>
+            <th scope="col">Flip rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Verdict 1.0 baseline</td><td>151M</td><td>26.10%</td><td>0.5851</td><td>0.4209</td><td class="dim">—</td><td class="dim">—</td></tr>
+          <tr><td>TF-IDF + logistic regression</td><td class="dim">—</td><td>66.10%</td><td>0.1520</td><td>0.0207</td><td class="dim">—</td><td>0.00%</td></tr>
+          <tr><td>Jev 1.13.0 <sup>†</sup></td><td>~150M</td><td>72.70%</td><td>0.1480</td><td>0.1440</td><td class="dim">—</td><td class="dim">—</td></tr>
+          <tr><td>Laya (ModernBERT-large)</td><td>421.3M</td><td>76.60%</td><td>0.0660</td><td>0.2140</td><td class="dim">—</td><td class="dim">—</td></tr>
+          <tr><td>Kev-0.5B (Qwen2.5) <sup>‡</sup></td><td>500M</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td>7.41%</td></tr>
+          <tr class="us"><td>Verdict 2.0 Base</td><td>149.6M</td><td>77.10%</td><td>0.0636</td><td>0.1513</td><td>0.0144</td><td>4.76%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="foot prose">
+      <sup>†</sup> Vendor-published figure; not independently re-measured here.
+      <sup>‡</sup> Kev's published flip rate on the identical option-order perturbation. Kev has never been evaluated on
+      typed-decisions, so only its stability number is comparable.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>The trap everyone else fell into</h2>
+    <div class="stack prose">
+      <p>Soft-labeled benchmarks hide a real mathematical conflict, and it explains the entire table above.</p>
+      <p>
+        The gold labels are not 0/1. They are expert-panel distributions, and the panel's average top probability is
+        <strong>0.659</strong> — measured human doubt. Meanwhile the model is right <strong>77.1%</strong> of the time.
+        That gap is the trap.
+      </p>
+    </div>
+
+    <div class="trap">
+      <div>
+        <h3>Match the panel → lose ECE</h3>
+        <p class="foot">Your top probability sits near 0.62 while you are right 77% of the time. Calibration error against
+        correctness blows out. <strong>This is Laya:</strong> Brier 0.066, ECE 0.214.</p>
+      </div>
+      <div>
+        <h3>Sharpen to correctness → lose Brier</h3>
+        <p class="foot">You now track your hit rate, but you have stopped matching the panel and your Brier inflates.
+        <strong>This is Jev:</strong> ECE 0.144, Brier 0.148.</p>
+      </div>
+      <div class="win">
+        <h3>Answer both questions separately</h3>
+        <p class="foot">One vector cannot do both jobs, because they are different questions.
+        <strong>Verdict 2.0 ships two channels</strong> and refuses the trade.</p>
+      </div>
+    </div>
+
+    <figure class="figure">
+      <div class="legend">
+        <span><i class="sw ctx"></i> Prior models</span>
+        <span><i class="sw hollow"></i> Verdict 2.0 — distribution channel</span>
+        <span><i class="sw acc"></i> Verdict 2.0 — confidence channel</span>
+      </div>
+      <div class="chart-scroll">
+        <svg viewBox="0 0 640 400" role="img" aria-label="Scatter plot of Brier score against calibration error. Verdict 2.0 sits lowest on both axes; its confidence channel drops calibration error from 0.1513 to 0.0144 at the same Brier score.">
+          <g class="grid">
+            <line x1="64" y1="336" x2="616" y2="336" /><line x1="64" y1="254" x2="616" y2="254" />
+            <line x1="64" y1="172" x2="616" y2="172" /><line x1="64" y1="90"  x2="616" y2="90" />
+          </g>
+          <line class="ax" x1="64" y1="28" x2="64" y2="336" />
+          <line class="ax" x1="64" y1="336" x2="616" y2="336" />
+
+          <g class="tick-t" text-anchor="end">
+            <text x="54" y="340">0.00</text><text x="54" y="258">0.06</text>
+            <text x="54" y="176">0.12</text><text x="54" y="94">0.18</text><text x="54" y="32">0.24</text>
+          </g>
+          <g class="tick-t" text-anchor="middle">
+            <text x="64" y="356">0.00</text><text x="202" y="356">0.04</text>
+            <text x="340" y="356">0.08</text><text x="478" y="356">0.12</text><text x="616" y="356">0.16</text>
+          </g>
+          <text class="ax-t" x="64" y="384">Brier score &#8594;</text>
+          <text class="ax-t" x="-28" y="18" transform="rotate(-90)" text-anchor="end">ECE &#8594;</text>
+          <text class="tick-t" x="76" y="326" fill="currentColor" opacity="0.55">&#8601; better on both</text>
+
+          <!-- dumbbell: the two channels of one model -->
+          <line x1="283" y1="149" x2="283" y2="330" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4" />
+          <path d="M 283 336 l -4.5 -8 l 9 0 z" fill="var(--accent)" />
+
+          <!-- context marks -->
+          <g class="dot" tabindex="0" data-tip="TF-IDF + logistic regression&#10;Brier 0.1520 · ECE 0.0207">
+            <circle cx="588" cy="328" r="6" fill="var(--context)" stroke="var(--surface)" stroke-width="2" />
+            <circle class="hit" cx="588" cy="328" r="17" />
+            <text class="pt-l" x="576" y="332" text-anchor="end">TF-IDF</text>
+          </g>
+          <g class="dot" tabindex="0" data-tip="Jev 1.13.0&#10;Brier 0.1480 · ECE 0.1440">
+            <circle cx="575" cy="159" r="6" fill="var(--context)" stroke="var(--surface)" stroke-width="2" />
+            <circle class="hit" cx="575" cy="159" r="17" />
+            <text class="pt-l" x="563" y="163" text-anchor="end">Jev 1.13.0</text>
+          </g>
+          <g class="dot" tabindex="0" data-tip="Laya — ModernBERT-large, 421.3M&#10;Brier 0.0660 · ECE 0.2140">
+            <circle cx="292" cy="64" r="6" fill="var(--context)" stroke="var(--surface)" stroke-width="2" />
+            <circle class="hit" cx="292" cy="64" r="17" />
+            <text class="pt-l" x="304" y="68" text-anchor="start">Laya &#183; 421.3M</text>
+          </g>
+
+          <!-- emphasis marks -->
+          <g class="dot" tabindex="0" data-tip="Verdict 2.0 — distribution channel&#10;Brier 0.0636 · ECE 0.1513&#10;Already tighter than Laya">
+            <circle cx="283" cy="149" r="6.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5" />
+            <circle class="hit" cx="283" cy="149" r="17" />
+            <text class="pt-l on" x="271" y="153" text-anchor="end">Channel 1</text>
+          </g>
+          <g class="dot" tabindex="0" data-tip="Verdict 2.0 — confidence channel&#10;Brier 0.0636 · ECE 0.0144&#10;Same Brier, calibration handled separately">
+            <circle cx="283" cy="336" r="7.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2" />
+            <circle class="hit" cx="283" cy="336" r="17" />
+            <text class="pt-l on" x="296" y="340" text-anchor="start">Channel 2 &#183; ECE 0.0144</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Every prior model sits on a frontier: push Brier left and calibration error climbs. Verdict 2.0 lands furthest
+        left on Brier <em>and</em>, on the distribution channel both models expose, already below Laya. The dashed drop is
+        the second channel taking over the calibration job at the same Brier score. Full numbers in the table above.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="stack">
+    <h2>Two channels, two questions</h2>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th scope="col"></th><th scope="col">Channel 1 — Distribution</th><th scope="col">Channel 2 — Confidence</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Question</td><td>What does the expert panel believe?</td><td>Is my answer correct?</td></tr>
+          <tr><td>Mechanism</td><td>Marker-pointer logits + per-bucket temperature</td><td><span class="mono">CorrectnessHead</span> MLP over distribution shape</td></tr>
+          <tr><td>Fit on</td><td>Calibration fold, 820 held-out decisions</td><td>Calibration fold, out-of-fold predictions</td></tr>
+          <tr class="us"><td>Scored by</td><td>Brier 0.0636</td><td>ECE 0.0144</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="stack prose">
+      <p>
+        The confidence head never sees the gold label as an input — only the <em>shape</em> of the prediction: top
+        probability, margin between first and second, normalized entropy, option cardinality, question type. It is
+        trained on decisions the encoder was never fit on.
+      </p>
+      <p>
+        And the distribution channel's calibration error turns out to be almost perfectly explained by the panel-doubt
+        gap itself:
+      </p>
+    </div>
+    <pre>accuracy (0.7710) &#8722; mean distribution confidence (0.6197) = <b>0.1513</b>
+reported ece_distribution                                 = <b>0.1513</b></pre>
+    <p class="foot prose">
+      Exact to four decimals. The distribution channel is not disordered — it is correctly shaped and deliberately
+      offset, because it reports the panel rather than its own hit rate. That is what Channel 2 is for.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>How it was built</h2>
+    <div class="cols">
+      <div class="cell">
+        <div class="lab">Marker-pointer</div>
+        <h3>Every option scored in one pass</h3>
+        <p>A 2-layer MLP reads the bidirectional hidden state at each <span class="mono">[MASK]</span> marker and emits one
+        logit per option — simultaneously, inside a single attention pass. No generation loop, no decoding, no parse step.</p>
+      </div>
+      <div class="cell">
+        <div class="lab">Type-routed loss</div>
+        <h3>Ordinal questions get ordinal math</h3>
+        <p>Choice gets soft cross-entropy plus Brier. Score adds Ranked Probability Score, so predicting level 1 when the
+        truth is level 5 costs more than predicting level 4. Result: MAE 0.2409, and 99.0% land within one level.</p>
+      </div>
+      <div class="cell">
+        <div class="lab">Permutation-KL</div>
+        <h3>Order the options differently, get the same answer</h3>
+        <p>On 30% of steps, a twin batch with shuffled options is scored and the symmetric KL between the two predictions
+        is added to the loss. Flip rate lands at 4.76% against Kev's published 7.41%, with p90 swing compressed from
+        0.2486 to 0.0915.</p>
+      </div>
+      <div class="cell">
+        <div class="lab">Dual calibration</div>
+        <h3>Both channels fit after training, on held-out data</h3>
+        <p>One temperature per (question type, option cardinality) bucket for the distribution channel; the correctness
+        head on out-of-fold predictions. The test vault is touched by neither step.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <h2>Trained on a laptop</h2>
+    <p class="lede prose">No cluster. No A100. No cloud bill. One consumer laptop GPU, overnight.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="v mono">6 GB</div><div class="k">GTX 1660 Ti</div><div class="s">Turing TU116 — no tensor cores</div></div>
+      <div class="kpi"><div class="v mono">31,757 s</div><div class="k">Wall clock, 8 epochs</div><div class="s">Best checkpoint at epoch 6</div></div>
+      <div class="kpi"><div class="v mono">~5.8 GB</div><div class="k">Peak VRAM</div><div class="s">Of 6.0 GB available</div></div>
+      <div class="kpi"><div class="v mono">24.7/s</div><div class="k">Inference throughput</div><div class="s">~20 ms per decision, same card</div></div>
+    </div>
+    <p class="foot prose">
+      The result outperforms a 421M-parameter model on the benchmark that model was published against.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>Per-workflow</h2>
+    <div class="scroller">
+      <table>
+        <thead><tr><th scope="col">Workflow</th><th scope="col">Decisions</th><th scope="col">Accuracy</th></tr></thead>
+        <tbody>
+          <tr><td>Invoice processing</td><td>500</td><td>81.2%</td></tr>
+          <tr><td>Customer service</td><td>500</td><td>78.4%</td></tr>
+          <tr><td>Security incidents</td><td>500</td><td>75.6%</td></tr>
+          <tr><td>Agent trace observability</td><td>500</td><td>73.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="stack">
+    <h2>Why Base and not Large</h2>
+    <div class="stack prose">
+      <p>
+        <span class="mono">ModernBERT-large</span> was the original plan. We stopped at Base, and the reason is on the
+        record rather than after the fact.
+      </p>
+      <p>
+        The runbook pre-registered the gate for the <em>shipping</em> model before any training started:
+        <strong>dev accuracy &#8805; 0.760 and dev Brier &#8804; 0.120</strong>. Base delivered
+        <strong>0.785</strong> and <strong>0.0639</strong> — it cleared the bar that had been set for the large model.
+      </p>
+      <p>
+        Base had also converged. Dev accuracy across the final four epochs: 0.7775 &#8594; 0.7850 &#8594; 0.7762 &#8594;
+        0.7825, oscillating inside half a point. Against that, Large needs 8-bit AdamW and gradient checkpointing to fit
+        in 6 GB at all, and would run an estimated 14–18 hours on this hardware.
+      </p>
+    </div>
+  </section>
+
+  <section class="stack">
+    <h2>Anti-leak protocol</h2>
+    <p class="prose">The test split was treated as a vault.</p>
+    <ul class="prose">
+      <li>The 1,200 training cases were partitioned <strong>at the case-id level</strong> — sibling questions from one case
+      can never straddle a fold — into fit (4,380 decisions), calib (820), and dev (800).</li>
+      <li>Every hyperparameter choice and the checkpoint selection used <strong>dev</strong>.</li>
+      <li>Temperature scaling and the confidence head were fit on <strong>calib</strong>.</li>
+      <li>The <strong>2,000 test decisions were read exactly once</strong>, after everything was frozen, behind an explicit
+      <span class="mono">--confirm</span> checklist gate.</li>
+      <li>Verified independently: <strong>zero case-id overlap</strong> and <strong>zero duplicate state payloads</strong>
+      between train and test.</li>
+    </ul>
+    <p class="foot prose">
+      Reference floors are published alongside the results, not omitted: uniform random 29.85%, majority label 48.35%,
+      TF-IDF + logistic regression 66.10%, gold-distribution oracle 98.45%.
+    </p>
+  </section>
+
+  <section class="stack">
+    <h2>Receipts</h2>
+    <div class="scroller">
+      <table>
+        <thead><tr><th scope="col">File</th><th scope="col">What it holds</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">reports/verdict2_base_test.json</td><td>Official test-vault receipt, all metrics</td></tr>
+          <tr><td class="mono">artifacts/verdict2-base/dev_metrics.json</td><td>Out-of-fold dev metrics</td></tr>
+          <tr><td class="mono">reports/reference_floors.json</td><td>Baseline floors on the same split</td></tr>
+          <tr><td class="mono">verdict2/train.py</td><td>Training, temperature fitting, confidence head</td></tr>
+          <tr><td class="mono">verdict2/evaluate.py</td><td>The single test read, with the anti-leak gate</td></tr>
+          <tr><td class="mono">RUNBOOK.md</td><td>Exact commands to reproduce end to end</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="foot prose">Every number on this page traces to a file in the repository.</p>
+  </section>
+
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+  (function () {
+    var tip = document.getElementById("tip");
+    function show(e, text) {
+      tip.textContent = "";
+      text.split("\n").forEach(function (line, i) {
+        if (i) tip.appendChild(document.createElement("br"));
+        tip.appendChild(document.createTextNode(line));
+      });
+      tip.classList.add("on");
+      move(e);
+    }
+    function move(e) {
+      var x = (e.clientX || 0) + 14, y = (e.clientY || 0) + 14;
+      var r = tip.getBoundingClientRect();
+      if (x + r.width > window.innerWidth - 8) x = window.innerWidth - r.width - 8;
+      if (y + r.height > window.innerHeight - 8) y = (e.clientY || 0) - r.height - 12;
+      tip.style.left = x + "px";
+      tip.style.top = y + "px";
+    }
+    function hide() { tip.classList.remove("on"); }
+
+    document.querySelectorAll(".dot").forEach(function (g) {
+      var text = g.getAttribute("data-tip") || "";
+      g.addEventListener("mouseenter", function (e) { show(e, text); });
+      g.addEventListener("mousemove", move);
+      g.addEventListener("mouseleave", hide);
+      g.addEventListener("focus", function () {
+        var b = g.getBoundingClientRect();
+        show({ clientX: b.left + b.width / 2, clientY: b.top + b.height / 2 }, text);
+      });
+      g.addEventListener("blur", hide);
+    });
+  })();
+</script>

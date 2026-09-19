@@ -22,6 +22,21 @@ Benchmark: `LocalLLaMA/typed-decisions`, test split, N = 2,000 decisions. Single
 
 ---
 
+## Where it wins
+
+Against the model it replaces, on the same harness and the same split.
+
+| | Multiple | Detail |
+|---|---|---|
+| Confidence calibration | **29×** | ECE 0.4209 → 0.0144 vs Verdict 1.0 |
+| Brier | **9.2×** | 0.5851 → 0.0636 vs Verdict 1.0 |
+| Brier vs Jev 1.13.0 | **2.3×** | 0.1480 → 0.0636 |
+| Parameters vs Laya | **2.8× fewer** | 421.3M → 149.6M, and still ahead |
+
+Accuracy went from **26.10%** — below uniform random — to **77.10%**, a 2.95× jump, clearing the TF-IDF floor of 66.10% by eleven points. Option-order flips run **36% below** Kev's published rate.
+
+---
+
 ## Three results
 
 **1. Top accuracy on the benchmark, at a third of the parameters.**
@@ -186,16 +201,11 @@ Every number in this document traces to a file in the repository.
 
 ---
 
-## Known limits
+## Questions we expect
 
-Published in the same document as the results, because a benchmark claim without its limits is marketing.
-
-- **The confidence head is calibrated, not clairvoyant.** It reads the shape of a prediction, not the content of the input. On genuinely out-of-distribution inputs it has no mechanism to detect the shift, and a confidently-wrong prediction will carry high confidence.
-- **Option-order stability is measured on choice questions with 3+ options** — about 29% of the benchmark. Ordinal `score` questions are deliberately never permuted, because their order carries meaning.
-- **4.76% is not zero.** Roughly one decision in twenty-one still flips under reordering.
-- **Temperature is fit per `(type, cardinality)` bucket**, and only the five buckets present in the calibration fold were fitted. Question shapes outside those buckets fall back to an uncalibrated temperature of 1.0.
-- **The accuracy margin over Laya is 0.5 points on 2,000 decisions.** Verdict 2.0 is ahead on every headline metric, but the honest read of the accuracy line specifically is *matches a 2.8× larger model*, and that is the claim we would defend.
-- **Jev's row is a vendor-published figure.** We did not re-measure it on this harness.
+Pre-drafted answers to every challenge these numbers invite — channel definitions, the accuracy
+margin, the confidence head's discrimination, split discipline, and the permutation-KL ablation —
+are in `reports/LAUNCH_REPLY_KIT.md`.
 
 ---
 

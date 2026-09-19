@@ -1,0 +1,12 @@
+{
+  "n": 800,
+  "accuracy": 0.785,
+  "soft_accuracy": 0.5618942169587716,
+  "brier": 0.06395458013510992,
+  "ece_distribution": 0.16678700920194384,
+  "ece_confidence": 0.028751862868666662,
+  "score_mae": 0.25884077525184157,
+  "within_one_level": 0.99375,
+  "mean_distribution_confidence": 0.6219171211495995,
+  "mean_head_confidence": 0.765943286344409
+}

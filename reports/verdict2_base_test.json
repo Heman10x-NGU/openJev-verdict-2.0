@@ -1,0 +1,50 @@
+{
+  "model": "Verdict-2.0 (answerdotai/ModernBERT-base)",
+  "benchmark": "LocalLLaMA/typed-decisions",
+  "split": "test",
+  "device": "cuda",
+  "total_decisions": 2000,
+  "metrics": {
+    "n": 2000,
+    "accuracy": 0.771,
+    "soft_accuracy": 0.5517,
+    "brier": 0.0636,
+    "ece_distribution": 0.1513,
+    "ece_confidence": 0.0144,
+    "score_mae": 0.2409,
+    "within_one_level": 0.99,
+    "mean_distribution_confidence": 0.6197,
+    "mean_head_confidence": 0.7626
+  },
+  "permutation_stability": {
+    "argmax_flip_rate": 0.0476,
+    "mean_prob_spread": 0.0511,
+    "p90_prob_spread": 0.0915,
+    "n_perturbed": 2918,
+    "kev_reference": {
+      "argmax_flip_rate": 0.0741,
+      "mean_prob_spread": 0.0653,
+      "p90_prob_spread": 0.2486
+    }
+  },
+  "throughput_decisions_per_second": 24.7,
+  "workflows": {
+    "agent_trace_observability": {
+      "decisions": 500,
+      "accuracy": 0.732
+    },
+    "customer_service": {
+      "decisions": 500,
+      "accuracy": 0.784
+    },
+    "invoice_processing": {
+      "decisions": 500,
+      "accuracy": 0.812
+    },
+    "security_incidents": {
+      "decisions": 500,
+      "accuracy": 0.756
+    }
+  },
+  "reference_floors_note": "Compare against reports/reference_floors.json in the same report."
+}

@@ -1,0 +1,1 @@
+artifacts/verdict2-base/model.pt filter=lfs diff=lfs merge=lfs -text

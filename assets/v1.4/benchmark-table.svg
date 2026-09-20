@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .card { fill: #161b22; stroke: #30363d; stroke-width: 1px; rx: 12px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 32px; font-weight: 700; fill: #f0f6fc; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 17px; fill: #8b949e; }
+      .th { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+      .th-accent { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; }
+      .td-name { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 600; fill: #f0f6fc; }
+      .td-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; fill: #8b949e; }
+      .td-num-before { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 18px; font-weight: 500; fill: #8b949e; }
+      .td-num-after { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 18px; font-weight: 700; fill: #38bdf8; }
+      .td-delta { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 17px; font-weight: 600; fill: #3fb950; }
+      .td-delta-neutral { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 17px; font-weight: 500; fill: #8b949e; }
+      .td-mech { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; fill: #c9d1d9; }
+      .divider { stroke: #21262d; stroke-width: 1px; }
+      .footer { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; fill: #8b949e; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="900" class="bg" />
+
+  <!-- Container Box -->
+  <rect x="60" y="50" width="1480" height="800" class="card" />
+
+  <!-- Header -->
+  <text x="100" y="115" class="title">JevBench Public Evaluation Breakdown</text>
+  <text x="100" y="145" class="subtitle">Performance across public evaluation tasks before and after inference-only engine improvements</text>
+
+  <!-- Table Headers -->
+  <text x="100" y="200" class="th">Evaluation Metric / Slice</text>
+  <text x="560" y="200" class="th">Before (v1.0)</text>
+  <text x="730" y="200" class="th-accent">After (v1.4)</text>
+  <text x="910" y="200" class="th">Change</text>
+  <text x="1130" y="200" class="th">Invariant / Mechanism</text>
+
+  <line x1="100" y1="220" x2="1500" y2="220" class="divider" stroke-width="2px" />
+
+  <!-- Row 1: Easy Accuracy -->
+  <g transform="translate(100, 265)">
+    <text x="0" y="0" class="td-name">Easy Tier Accuracy</text>
+    <text x="0" y="22" class="td-sub">48 public evaluation tasks</text>
+    <text x="460" y="10" class="td-num-before">85.4%</text>
+    <text x="630" y="10" class="td-num-after">87.5%</text>
+    <text x="810" y="10" class="td-delta">+2.1%</text>
+    <text x="1030" y="10" class="td-mech">NLI sentence templating</text>
+  </g>
+
+  <line x1="100" y1="325" x2="1500" y2="325" class="divider" />
+
+  <!-- Row 2: Standard Accuracy -->
+  <g transform="translate(100, 370)">
+    <text x="0" y="0" class="td-name">Standard Tier Accuracy</text>
+    <text x="0" y="22" class="td-sub">72 public evaluation tasks</text>
+    <text x="460" y="10" class="td-num-before">62.5%</text>
+    <text x="630" y="10" class="td-num-after">69.4%</text>
+    <text x="810" y="10" class="td-delta">+6.9%</text>
+    <text x="1030" y="10" class="td-mech">NLI sentence templating</text>
+  </g>
+
+  <line x1="100" y1="430" x2="1500" y2="430" class="divider" />
+
+  <!-- Row 3: Hard Accuracy -->
+  <g transform="translate(100, 475)">
+    <text x="0" y="0" class="td-name">Hard Tier Accuracy</text>
+    <text x="0" y="22" class="td-sub">111 public evaluation tasks</text>
+    <text x="460" y="10" class="td-num-before">36.9%</text>
+    <text x="630" y="10" class="td-num-after">36.9%</text>
+    <text x="810" y="10" class="td-delta-neutral">0.0% (unchanged)</text>
+    <text x="1030" y="10" class="td-mech">Context budget (512 tokens)</text>
+  </g>
+
+  <line x1="100" y1="535" x2="1500" y2="535" class="divider" />
+
+  <!-- Row 4: Hard ECE -->
+  <g transform="translate(100, 580)">
+    <text x="0" y="0" class="td-name">Hard-tier Calibration Error (ECE)</text>
+    <text x="0" y="22" class="td-sub">111 tasks (lower is better)</text>
+    <text x="460" y="10" class="td-num-before">0.298</text>
+    <text x="630" y="10" class="td-num-after">0.118</text>
+    <text x="810" y="10" class="td-delta">-0.180 (-60.4%)</text>
+    <text x="1030" y="10" class="td-mech">Auto-calibrator &amp; per-k scaling</text>
+  </g>
+
+  <line x1="100" y1="640" x2="1500" y2="640" class="divider" />
+
+  <!-- Row 5: Probability Fidelity -->
+  <g transform="translate(100, 685)">
+    <text x="0" y="0" class="td-name">Probability Fidelity</text>
+    <text x="0" y="22" class="td-sub">231 tasks aggregate confidence reliability</text>
+    <text x="460" y="10" class="td-num-before">62.8</text>
+    <text x="630" y="10" class="td-num-after">72.8</text>
+    <text x="810" y="10" class="td-delta">+10.0 pts</text>
+    <text x="1030" y="10" class="td-mech">Auto-calibrator &amp; per-k scaling</text>
+  </g>
+
+  <line x1="100" y1="745" x2="1500" y2="745" class="divider" />
+
+  <!-- Footer -->
+  <text x="100" y="795" class="footer">231 public JevBench tasks, measured 20 Sept 2026. Same weights, inference fixes only.</text>
+</svg>

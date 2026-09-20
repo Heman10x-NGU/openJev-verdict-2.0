@@ -8,6 +8,49 @@
 [![In-Browser WebGPU](https://img.shields.io/badge/WebGPU-Zero--Cloud%20Edge%20Ready-blueviolet)](#in-browser-webgpu-engine)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
+---
+
+## Two models in this project
+
+This repository contains code and references for two distinct models:
+
+1. Verdict (the 151M model evaluated on JevBench): General-purpose decision model based on ModernBERT-base and GLiClass. The public checkpoint is hosted at [heman10x/rlcd-modernbert-151m](https://huggingface.co/heman10x/rlcd-modernbert-151m), now updated to v1.4 via inference engine fixes.
+2. Verdict 2.0: Specialized architecture for typed software workflows evaluated on `LocalLLaMA/typed-decisions`. The model weights are currently tracked via Git LFS pointers in `artifacts/verdict2-base/model.pt`. The benchmark numbers reported in the breakthrough section below were produced directly by `verdict2/evaluate.py` against its audited test receipt (`reports/verdict2_base_test.json`).
+
+---
+
+## What changed in the inference engine
+
+These are inference fixes, not a retrain. The weights are byte-identical to the published checkpoint. Measured on the 231 public JevBench tasks.
+
+<p align="center">
+  <img src="assets/v1.4/benchmark-deltas.png" alt="Inference Engine v1.4: Metric Improvements" width="880">
+</p>
+
+<p align="center">
+  <img src="assets/v1.4/benchmark-table.png" alt="JevBench Public Evaluation Breakdown" width="880">
+</p>
+
+The update addresses three defects in the inference engine:
+
+1. Calibrator auto-loading and removal of the 5-option scope restriction: The engine previously failed to load `calibrator.json` during standalone instantiation, running at uncalibrated temperature 1.0. A scope check also limited calibration exclusively to 5-candidate queries, leaving other cardinalities unscaled. The engine now loads calibrated temperatures automatically and scales across all supported candidate counts.
+2. NLI sentence templating for candidate labels: Candidate labels were previously evaluated as bare noun phrases. Because the underlying GLiClass backbone descends from natural language inference (NLI) formulations that expect hypothesis sentences, formatting candidates with hypothesis framing (`It is {description}`) aligns inputs with pretrained representations and lifts accuracy.
+3. Context budget cut from 1024 to 512 tokens: The model weights were trained on context states under 71 tokens. Reducing the maximum token budget from 1024 to 512 tokens avoids out-of-distribution positional drift while preserving complete task contexts.
+
+### Measured results across 231 public JevBench tasks
+
+| Evaluation metric / slice | Before (v1.0) | After (v1.4) | Change | Invariant / mechanism |
+| :--- | :--- | :--- | :--- | :--- |
+| Easy tier accuracy (48 tasks) | 85.4% | 87.5% | +2.1% | NLI sentence templating |
+| Standard tier accuracy (72 tasks) | 62.5% | 69.4% | +6.9% | NLI sentence templating |
+| Hard tier accuracy (111 tasks) | 36.9% | 36.9% | 0.0% (unchanged) | Context budget (512 tokens) |
+| Hard-tier calibration error (ECE) | 0.298 | 0.118 | -0.180 (-60.4%) | Auto-calibrator and per-k scaling |
+| Probability fidelity | 62.8 | 72.8 | +10.0 pts | Auto-calibrator and per-k scaling |
+
+Model weights and artifacts are hosted on Hugging Face at [heman10x/rlcd-modernbert-151m](https://huggingface.co/heman10x/rlcd-modernbert-151m). Full benchmark details and leaderboards are available at [Benchmark Heaven Jev Models](https://benchmarkheaven.com/jev-models).
+
+---
+
 An open-source 149.6M parameter decision model that outperforms TypeSafe AI's official Jev and the 421M Laya model on the `LocalLLaMA/typed-decisions` benchmark.
 
 On 2,000 held-out enterprise decisions, openJev-verdict-2.0 delivers **77.10% accuracy** (ahead of Laya's 76.60% and Jev's 72.70%), achieves a **0.0636 Brier score** (best overall), and drops calibration error to **1.44% ECE** on its dedicated confidence head. It achieves this at 2.8x fewer parameters, fine-tuned in 8.8 hours on a budget consumer laptop GPU.

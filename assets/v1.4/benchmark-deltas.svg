@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .card { fill: #161b22; stroke: #30363d; stroke-width: 1px; rx: 12px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 32px; font-weight: 700; fill: #f0f6fc; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 17px; fill: #8b949e; }
+      .legend-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 500; fill: #c9d1d9; }
+      .metric-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #f0f6fc; }
+      .metric-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; fill: #8b949e; }
+      .val-before { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 16px; font-weight: 600; fill: #8b949e; }
+      .val-after { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 16px; font-weight: 700; fill: #38bdf8; }
+      .delta-pos { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 16px; font-weight: 700; fill: #3fb950; }
+      .delta-cal { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 16px; font-weight: 700; fill: #3fb950; }
+      .footer { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; fill: #8b949e; }
+      .bar-before { fill: #2d333b; rx: 4px; }
+      .bar-after { fill: #38bdf8; rx: 4px; }
+      .divider { stroke: #21262d; stroke-width: 1px; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="900" class="bg" />
+
+  <!-- Container Box -->
+  <rect x="60" y="50" width="1480" height="800" class="card" />
+
+  <!-- Header -->
+  <text x="100" y="115" class="title">Inference Engine v1.4: Metric Improvements</text>
+  <text x="100" y="145" class="subtitle">Measured across 231 public JevBench evaluation tasks with byte-identical model weights</text>
+
+  <!-- Legend -->
+  <rect x="1100" y="105" width="16" height="16" rx="3" fill="#2d333b" stroke="#444c56" stroke-width="1" />
+  <text x="1126" y="119" class="legend-text">Before (v1.0)</text>
+  <rect x="1270" y="105" width="16" height="16" rx="3" fill="#38bdf8" />
+  <text x="1296" y="119" class="legend-text">After (v1.4)</text>
+
+  <line x1="100" y1="175" x2="1500" y2="175" class="divider" />
+
+  <!-- Metric 1: Easy Accuracy -->
+  <g transform="translate(100, 215)">
+    <text x="0" y="24" class="metric-label">Easy Accuracy</text>
+    <text x="0" y="46" class="metric-sub">48 public tasks</text>
+    
+    <!-- Before Bar: 85.4% -->
+    <rect x="340" y="8" width="683" height="22" class="bar-before" />
+    <text x="1035" y="25" class="val-before">85.4%</text>
+
+    <!-- After Bar: 87.5% -->
+    <rect x="340" y="38" width="700" height="22" class="bar-after" />
+    <text x="1052" y="55" class="val-after">87.5%</text>
+
+    <!-- Delta -->
+    <text x="1240" y="40" class="delta-pos">+2.1%</text>
+  </g>
+
+  <line x1="100" y1="315" x2="1500" y2="315" class="divider" />
+
+  <!-- Metric 2: Standard Accuracy -->
+  <g transform="translate(100, 355)">
+    <text x="0" y="24" class="metric-label">Standard Accuracy</text>
+    <text x="0" y="46" class="metric-sub">72 public tasks</text>
+
+    <!-- Before Bar: 62.5% -->
+    <rect x="340" y="8" width="500" height="22" class="bar-before" />
+    <text x="852" y="25" class="val-before">62.5%</text>
+
+    <!-- After Bar: 69.4% -->
+    <rect x="340" y="38" width="555" height="22" class="bar-after" />
+    <text x="907" y="55" class="val-after">69.4%</text>
+
+    <!-- Delta -->
+    <text x="1240" y="40" class="delta-pos">+6.9%</text>
+  </g>
+
+  <line x1="100" y1="455" x2="1500" y2="455" class="divider" />
+
+  <!-- Metric 3: Hard-tier ECE -->
+  <g transform="translate(100, 495)">
+    <text x="0" y="24" class="metric-label">Hard-tier Calibration Error (ECE)</text>
+    <text x="0" y="46" class="metric-sub">111 public tasks (lower is better)</text>
+
+    <!-- Before Bar: 0.298 -->
+    <rect x="340" y="8" width="596" height="22" class="bar-before" />
+    <text x="948" y="25" class="val-before">0.298</text>
+
+    <!-- After Bar: 0.118 -->
+    <rect x="340" y="38" width="236" height="22" class="bar-after" />
+    <text x="588" y="55" class="val-after">0.118</text>
+
+    <!-- Delta -->
+    <text x="1240" y="40" class="delta-cal">-0.180 (-60.4%)</text>
+  </g>
+
+  <line x1="100" y1="595" x2="1500" y2="595" class="divider" />
+
+  <!-- Metric 4: Probability Fidelity -->
+  <g transform="translate(100, 635)">
+    <text x="0" y="24" class="metric-label">Probability Fidelity</text>
+    <text x="0" y="46" class="metric-sub">231 tasks aggregate confidence reliability</text>
+
+    <!-- Before Bar: 62.8 -->
+    <rect x="340" y="8" width="502" height="22" class="bar-before" />
+    <text x="854" y="25" class="val-before">62.8</text>
+
+    <!-- After Bar: 72.8 -->
+    <rect x="340" y="38" width="582" height="22" class="bar-after" />
+    <text x="934" y="55" class="val-after">72.8</text>
+
+    <!-- Delta -->
+    <text x="1240" y="40" class="delta-pos">+10.0 pts</text>
+  </g>
+
+  <line x1="100" y1="735" x2="1500" y2="735" class="divider" />
+
+  <!-- Footer -->
+  <text x="100" y="795" class="footer">231 public JevBench tasks, measured 20 Sept 2026. Same weights, inference fixes only.</text>
+</svg>

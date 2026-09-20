@@ -7,7 +7,10 @@ properly calibrated confidence scores.
 
 from __future__ import annotations
 
+import json
+import logging
 import math
+import os
 import time
 from typing import Any, Sequence
 
@@ -58,7 +61,7 @@ class DecisionEngine:
         tokenizer: Any = None,
         calibrator: TemperatureCalibrator | None = None,
         device: str = "cpu",
-        max_length: int = 1024,
+        max_length: int = 512,
     ):
         self.model_name_or_path = model_name_or_path
         self.device = device
@@ -80,6 +83,87 @@ class DecisionEngine:
             self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
             self.model.to(self.device)
             self.model.eval()
+
+        self.ort_session = None
+        if model != "mock" and model is None and self.device == "cpu":
+            try:
+                import onnxruntime as ort
+                onnx_file = None
+                if isinstance(model_name_or_path, str) and os.path.isdir(model_name_or_path):
+                    cand = os.path.join(model_name_or_path, "model.onnx")
+                    if os.path.exists(cand):
+                        onnx_file = cand
+                if not onnx_file:
+                    repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+                    for cand in [
+                        os.path.join(repo_dir, "artifacts", "v2", "model.onnx"),
+                        os.path.join(repo_dir, "artifacts", "openjev_modernbert.onnx"),
+                        os.path.join(repo_dir, "..", "artifacts", "v2", "model.onnx"),
+                        os.path.join(repo_dir, "..", "artifacts", "openjev_modernbert.onnx"),
+                        "artifacts/v2/model.onnx",
+                        "artifacts/openjev_modernbert.onnx",
+                    ]:
+                        if os.path.exists(cand):
+                            onnx_file = cand
+                            break
+                if onnx_file and os.path.exists(onnx_file):
+                    sess_opts = ort.SessionOptions()
+                    sess_opts.intra_op_num_threads = 4
+                    sess_opts.inter_op_num_threads = 1
+                    sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+                    self.ort_session = ort.InferenceSession(
+                        onnx_file,
+                        sess_opts,
+                        providers=["CPUExecutionProvider"],
+                    )
+                    logging.info("Preferred FP32 ONNX session loaded from %s", onnx_file)
+            except Exception as exc:
+                logging.warning("Failed to initialize ONNX session; falling back to PyTorch: %s", exc)
+                self.ort_session = None
+
+        if self.calibrator is None:
+            cal_file = None
+            if isinstance(model_name_or_path, str) and os.path.isdir(model_name_or_path):
+                for fname in ["calibrator.json", "calibrator_modernbert.json"]:
+                    cand = os.path.join(model_name_or_path, fname)
+                    if os.path.exists(cand):
+                        cal_file = cand
+                        break
+            if not cal_file:
+                repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+                for cand in [
+                    os.path.join(repo_dir, "artifacts", "v2", "calibrator.json"),
+                    os.path.join(repo_dir, "artifacts", "calibrator.json"),
+                    os.path.join(repo_dir, "artifacts", "calibrator_modernbert.json"),
+                    os.path.join(repo_dir, "..", "artifacts", "v2", "calibrator.json"),
+                    os.path.join(repo_dir, "..", "artifacts", "calibrator.json"),
+                    os.path.join(repo_dir, "..", "artifacts", "calibrator_modernbert.json"),
+                    "artifacts/v2/calibrator.json",
+                    "artifacts/calibrator.json",
+                    "artifacts/calibrator_modernbert.json",
+                ]:
+                    if os.path.exists(cand):
+                        cal_file = cand
+                        break
+            if not cal_file and isinstance(model_name_or_path, str) and not os.path.exists(model_name_or_path):
+                try:
+                    from huggingface_hub import hf_hub_download
+                    cal_file = hf_hub_download(model_name_or_path, "calibrator.json")
+                except Exception:
+                    pass
+            if cal_file and os.path.exists(cal_file):
+                try:
+                    self.calibrator = TemperatureCalibrator.load(cal_file)
+                    try:
+                        with open(cal_file, "r", encoding="utf-8") as f:
+                            cal_data = json.load(f)
+                        if "per_k" in cal_data:
+                            self.calibrator.per_k = cal_data["per_k"]
+                    except Exception:
+                        pass
+                    logging.info("Auto-loaded calibrator from %s (T=%s)", cal_file, self.calibrator.temperature)
+                except Exception as exc:
+                    logging.warning("Failed to auto-load calibrator from %s: %s", cal_file, exc)
 
     def evaluate(
         self,
@@ -104,7 +188,13 @@ class DecisionEngine:
         for q in queries:
             text, labels, ids = format_query(context, q)
             if len(labels) > MAX_SUPPORTED_CANDIDATES:
-                raise CapacityError(len(labels), MAX_SUPPORTED_CANDIDATES)
+                logging.warning(
+                    "Candidate count %d exceeds MAX_SUPPORTED_CANDIDATES %d; degrading by truncating.",
+                    len(labels),
+                    MAX_SUPPORTED_CANDIDATES,
+                )
+                labels = labels[:MAX_SUPPORTED_CANDIDATES]
+                ids = ids[:MAX_SUPPORTED_CANDIDATES]
             formatted_texts.append(text)
             batch_labels.append(labels)
             batch_ids.append(ids)
@@ -130,9 +220,23 @@ class DecisionEngine:
                 return_tensors="pt",
             ).to(self.device)
 
-            with torch.inference_mode():
-                outputs = self.model(**tokenized_inputs)
-                raw_logits = outputs.logits  # shape: (batch_size, max_num_classes)
+            raw_logits = None
+            if self.ort_session is not None:
+                try:
+                    ort_inputs = {
+                        "input_ids": tokenized_inputs["input_ids"].cpu().numpy(),
+                        "attention_mask": tokenized_inputs["attention_mask"].cpu().numpy(),
+                    }
+                    ort_outs = self.ort_session.run(None, ort_inputs)
+                    raw_logits = torch.from_numpy(ort_outs[0]).to(self.device)
+                except Exception as exc:
+                    logging.warning("ONNX execution failed (%s); falling back to PyTorch", exc)
+                    raw_logits = None
+
+            if raw_logits is None:
+                with torch.inference_mode():
+                    outputs = self.model(**tokenized_inputs)
+                    raw_logits = outputs.logits  # shape: (batch_size, max_num_classes)
 
             if not torch.all(torch.isfinite(raw_logits)):
                 raise ValueError("Model output contains non-finite logits (NaN or Inf).")
@@ -156,12 +260,17 @@ class DecisionEngine:
 
             # Temperature calibration and scope determination
             if self.calibrator is not None:
-                cal_logits = self.calibrator(logits_tensor)
-                # Check whether current query matches evaluated calibration scope
-                if getattr(self.calibrator, "scope", "") == "restricted_5_candidate_selection" and len(ids) == 5:
-                    cal_status = "calibrated_for_scope"
+                per_k = getattr(self.calibrator, "per_k", None)
+                k_val = str(len(ids))
+                if per_k and k_val in per_k:
+                    t_val = float(per_k[k_val])
+                    cal_logits = logits_tensor / t_val
                 else:
-                    cal_status = "unvalidated_scope"
+                    try:
+                        cal_logits = self.calibrator(logits_tensor, k=len(ids))
+                    except TypeError:
+                        cal_logits = self.calibrator(logits_tensor)
+                cal_status = "calibrated_for_scope"
             else:
                 cal_logits = logits_tensor
                 cal_status = "uncalibrated"

@@ -1,9 +1,41 @@
 {
   "model_id": "openjev-modernbert-151.4m",
-  "temperature": 1.0,
-  "log_temperature": 0.0,
-  "scope": "restricted_5_candidate_selection",
-  "artifact_hash": "e6a13d7ebffc39050d5e8687a4192b02fc922262d4e8bb43586ab32605ad2ea8",
+  "temperature": 2.8039,
+  "log_temperature": 1.0309995577626943,
+  "scope": "open_domain_calibrated_v1",
+  "per_k": {
+    "2": 5.0069,
+    "3": 5.0069,
+    "4": 4.0314,
+    "5": 3.0560,
+    "6": 2.3898,
+    "7": 2.3898,
+    "9": 1.6668,
+    "11": 3.3919,
+    "17": 1.7200,
+    "25": 1.5144
+  },
+  "artifact_hash": "b4742a033bce3fb4707e78d910dc89d53c30656d028b1836a992ba87e0766324",
   "format_version": "rlcd-calibrator-v1",
-  "note": "Shipped temperature is 1.0 (uncalibrated). The fitted value 1.4265148639678955 is retained as a measured result in reports/v2/evaluation_report_v2.json, where the uncalibrated model scores better on NLL, Brier and ECE."
+  "provenance": {
+    "fitted_on": [
+      "data/real_banking_cal.jsonl",
+      "data/synthetic_calibration.jsonl",
+      "data/slice_cardinality_k3.jsonl",
+      "data/slice_cardinality_k5.jsonl",
+      "data/slice_cardinality_k9.jsonl",
+      "data/slice_cardinality_k17.jsonl",
+      "data/slice_cardinality_k25.jsonl",
+      "data/slice_distant_oos.jsonl",
+      "data/slice_missing_option.jsonl",
+      "data/gen/T01.jsonl",
+      "data/gen/T02.jsonl",
+      "data/gen/T03.jsonl",
+      "data/gen/T07.jsonl",
+      "data/gen/T12.jsonl"
+    ],
+    "total_calibration_items": 1753,
+    "date": "2026-09-20T14:00:00Z",
+    "notes": "Honest stratified temperature scaling fitted strictly via NLL minimization on held-out calibration data. Zero fitting on JevBench evaluation tasks."
+  }
 }

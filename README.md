@@ -24,11 +24,11 @@ This repository contains code and references for two distinct models:
 These are inference fixes, not a retrain. The weights are byte-identical to the published checkpoint. Measured on the 231 public JevBench tasks.
 
 <p align="center">
-  <img src="assets/v1.4/benchmark-deltas.png" alt="Inference Engine v1.4: Metric Improvements" width="880">
+  <img src="assets/v1.4/benchmark-leaderboard-chart.png" alt="JevBench Score Leaderboard: openJev Verdict v1.4" width="100%">
 </p>
 
 <p align="center">
-  <img src="assets/v1.4/benchmark-table.png" alt="JevBench Public Evaluation Breakdown" width="880">
+  <img src="assets/v1.4/benchmark-leaderboard-table.png" alt="JevBench Detailed Evaluation Table: openJev Verdict v1.4" width="100%">
 </p>
 
 The update addresses three defects in the inference engine:

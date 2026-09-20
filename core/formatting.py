@@ -76,22 +76,36 @@ def format_query(
         candidate_labels: Natural-language label descriptions for GLiClass.
         candidate_ids: Corresponding stable option/level/noul IDs.
     """
+    import logging
+
     if query.kind == "choice":
-        if len(query.options) > MAX_SUBSTANTIVE_CANDIDATES:
-            raise CapacityError(len(query.options) + 1, MAX_SUPPORTED_CANDIDATES)
+        options = list(query.options)
+        if len(options) > MAX_SUBSTANTIVE_CANDIDATES:
+            logging.warning(
+                "Query options count %d exceeds MAX_SUBSTANTIVE_CANDIDATES %d; degrading by truncating.",
+                len(options),
+                MAX_SUBSTANTIVE_CANDIDATES,
+            )
+            options = options[:MAX_SUBSTANTIVE_CANDIDATES]
         formatted_text = f"Question: {query.question}\n\nContext:\n{context}"
-        labels = [opt.description for opt in query.options] + [INSUFFICIENT_EVIDENCE_DESC]
-        ids = [opt.id for opt in query.options] + [INSUFFICIENT_EVIDENCE_ID]
+        labels = [f"It is {opt.description}" for opt in options] + [INSUFFICIENT_EVIDENCE_DESC]
+        ids = [opt.id for opt in options] + [INSUFFICIENT_EVIDENCE_ID]
         return formatted_text, labels, ids
 
     if query.kind == "score":
-        if len(query.levels) > MAX_SUBSTANTIVE_CANDIDATES:
-            raise CapacityError(len(query.levels) + 1, MAX_SUPPORTED_CANDIDATES)
+        levels = list(query.levels)
+        if len(levels) > MAX_SUBSTANTIVE_CANDIDATES:
+            logging.warning(
+                "Query levels count %d exceeds MAX_SUBSTANTIVE_CANDIDATES %d; degrading by truncating.",
+                len(levels),
+                MAX_SUBSTANTIVE_CANDIDATES,
+            )
+            levels = levels[:MAX_SUBSTANTIVE_CANDIDATES]
         formatted_text = f"Question: {query.question}\n\nContext:\n{context}"
         labels = [
-            f"{lvl.description} (Value: {lvl.value})" for lvl in query.levels
+            f"{lvl.description} (Value: {lvl.value})" for lvl in levels
         ] + [INSUFFICIENT_EVIDENCE_DESC]
-        ids = [lvl.id for lvl in query.levels] + [INSUFFICIENT_EVIDENCE_ID]
+        ids = [lvl.id for lvl in levels] + [INSUFFICIENT_EVIDENCE_ID]
         return formatted_text, labels, ids
 
     if query.kind == "noul":

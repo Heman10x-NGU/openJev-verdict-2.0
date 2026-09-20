@@ -2,15 +2,17 @@
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-heman10x%2FopenJev--verdict--2.0-blue)](https://huggingface.co/heman10x/openJev-verdict-2.0)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-openJev--verdict--2.0-black?logo=github)](https://github.com/Heman10x-NGU/openJev-verdict-2.0)
-[![Accuracy](https://img.shields.io/badge/Top--1%20Accuracy-77.10%25%20(SOTA)-brightgreen)](#the-openjev-verdict-20-benchmark-breakthrough)
-[![Calibration](https://img.shields.io/badge/Confidence%20ECE-1.44%25%20(15x%20SOTA)-success)](#dual-channel-calibration)
-[![Latency](https://img.shields.io/badge/Latency-~20ms%20%2F%20decision-orange)](#single-pass-efficiency)
+[![Accuracy](https://img.shields.io/badge/Top--1%20Accuracy-77.10%25-brightgreen)](#the-openjev-verdict-20-benchmark-breakthrough)
+[![Calibration](https://img.shields.io/badge/Confidence%20ECE-1.44%25-success)](#dual-channel-calibration)
+[![Latency](https://img.shields.io/badge/Latency-~20--25ms%20%2F%20decision-orange)](#single-pass-efficiency)
 [![In-Browser WebGPU](https://img.shields.io/badge/WebGPU-Zero--Cloud%20Edge%20Ready-blueviolet)](#in-browser-webgpu-engine)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
-**openJev-verdict-2.0** is an open-source, non-autoregressive foundational decision model engineered for deterministic software automation, inspired by **TypeSafe AI's Jev** and **Reinforcement Learning for Calibrated Decisions (RLCD)**.
+An open-source 149.6M parameter decision model that outperforms TypeSafe AI's official Jev and the 421M Laya model on the `LocalLLaMA/typed-decisions` benchmark.
 
-While standard Large Language Models waste compute generating text strings that deterministic software must parse and validate, openJev-verdict-2.0 evaluates typed decision schemas (`Choice`, `Score`, `Noul`) in **non-autoregressive forward passes (~20–25 ms per decision)** with **actuarial-grade calibration (1.44% ECE)**.
+On 2,000 held-out enterprise decisions, openJev-verdict-2.0 delivers **77.10% accuracy** (ahead of Laya's 76.60% and Jev's 72.70%), achieves a **0.0636 Brier score** (best overall), and drops calibration error to **1.44% ECE** on its dedicated confidence head. It achieves this at 2.8x fewer parameters, fine-tuned in 8.8 hours on a budget consumer laptop GPU.
+
+If you find this model, benchmark, or code useful for your workflows, please leave a star ⭐ on the repository.
 
 <p align="center">
   <img src="assets/verdict2_vs_laya_jev_showdown.png" alt="openJev-verdict-2.0 vs Laya and Jev Showdown" width="880">
@@ -18,21 +20,67 @@ While standard Large Language Models waste compute generating text strings that 
 
 ---
 
-## The openJev-verdict-2.0 Benchmark Breakthrough
+## Overview
 
-Evaluated on the held-out test split of `LocalLLaMA/typed-decisions` (N = 2,000 decisions across enterprise financial, security, customer support, and agent trace observability workflows):
+Large language models generate unstructured strings that deterministic code must parse, validate, and retry. 
+
+openJev-verdict-2.0 evaluates typed decision schemas (`Choice`, `Score`, `Noul`) in non-autoregressive forward passes (~20 to 25 ms per decision) with calibrated confidence estimates. Deterministic software retains full control over application state, thresholds, and business rules, while the model supplies bounded semantic classification.
+
+---
+
+## Benchmark breakthrough
+
+Evaluated on the held-out test split of `LocalLLaMA/typed-decisions` (2,000 decisions across enterprise financial, security, customer support, and agent trace observability workflows):
 
 | Model | Parameters | Top-1 Accuracy ↑ | Brier Loss (Soft) ↓ | ECE (Correctness Head) ↓ | ECE (Distribution Channel) ↓ | Latency (Decision) ↓ | Option Flip Rate ↓ |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Verdict 1.0 Baseline** | 149.6M | 26.10% | 0.5851 | — | 0.4209 | ~35 ms | High |
-| **TF-IDF + Logistic Reg** | — | 66.10% | 0.1520 | — | 0.0207 | **~8 ms** | **0.00%** |
-| **TypeSafe Jev 1.13.0** <sup>†</sup> | ~150M | 72.70% | 0.1480 | — | 0.1440 | ~140 ms | — |
-| **Laya (ModernBERT-large)**| 421.3M | 76.60% | 0.0660 | — | 0.2140 | ~31 ms | — |
+| **Verdict 1.0 Baseline** | 149.6M | 26.10% | 0.5851 | (none) | 0.4209 | ~35 ms | High |
+| **TF-IDF + Logistic Reg** | (none) | 66.10% | 0.1520 | (none) | 0.0207 | **~8 ms** | **0.00%** |
+| **TypeSafe Jev 1.13.0** <sup>†</sup> | ~150M | 72.70% | 0.1480 | (none) | 0.1440 | ~140 ms | (none) |
+| **Laya (ModernBERT-large)**| 421.3M | 76.60% | 0.0660 | (none) | 0.2140 | ~31 ms | (none) |
 | **openJev-verdict-2.0 (Ours)**| **149.6M** | **77.10%** | **0.0636** | **0.0144** | **0.1513** | **~20–25 ms** | **4.76%** |
 
 *Notes:*  
 <sup>†</sup> *Vendor baseline cataloged in Laya's published evaluation suite.*  
-*Kev published a 7.41% flip rate on its multi-task suite ($N=81$); openJev-verdict-2.0 achieves 4.76% across $N=2,918$ enterprise perturbations.*
+*Kev published a 7.41% flip rate on its multi-task suite (N = 81); openJev-verdict-2.0 achieves 4.76% across N = 2,918 enterprise perturbations.*
+
+<p align="center">
+  <img src="assets/verdict2_performance_matrix_twitter.png" alt="openJev-verdict-2.0 Performance Matrix" width="880">
+</p>
+
+---
+
+## Architectural decisions
+
+### 1. Parameter efficiency (149.6M Base beats 421M Large)
+Laya reached 76.60% accuracy using ModernBERT-large (421.3M parameters). openJev-verdict-2.0 reaches 77.10% accuracy and 0.0636 Brier score using ModernBERT-base (149.6M parameters), matching and edging out a model 2.8x larger with less than half the VRAM footprint. Training took 8.8 hours on a single GTX 1660 Ti (6 GB VRAM) with zero cloud clusters.
+
+### 2. Dual-channel calibration
+Soft-labeled benchmarks create a mathematical conflict:
+- Human expert panels have measured doubt (average top probability is 0.659).
+- If a model matches the soft distribution, its top probability sits near 0.62 while its accuracy is 77.10%. Evaluated against binary correctness, its calibration error rises (Laya: Brier 0.0660, ECE 0.2140).
+- If a model sharpens probabilities to match hit rates, it diverges from the panel and degrades Brier score (Jev: ECE 0.1440, Brier 0.1480).
+- openJev-verdict-2.0 decouples these into dual heads:
+  - **Channel 1 (Distribution Head):** Marker-pointer logits scoring 0.0636 Brier and 0.1513 distribution ECE (29% lower error than Laya's 0.2140).
+  - **Channel 2 (Confidence Head):** Dedicated MLP trained out-of-fold over prediction geometry, scoring 1.44% ECE (0.0144) and 0.7664 AUROC on 2,000 held-out test decisions.
+
+### 3. Selective classification and automated gating
+The confidence head enables predictable human-in-the-loop escalation rules in software. On 2,000 held-out test decisions:
+- At 80% coverage: Accuracy rises to 83.44%
+- At 60% coverage: Accuracy reaches 89.00%
+- At 50% coverage: Accuracy reaches 91.40%
+- At 30% coverage: Accuracy reaches 95.17%
+
+Code can automate high-confidence outputs directly and route ambiguous cases to human operators without false-positive surprises. Every curve point is recorded in `reports/verdict2_base_test.json`.
+
+### 4. Symmetric Permutation-KL (Crushing prompt-order bias)
+Autoregressive models suffer from order bias: shuffling option positions (A/B/C vs C/B/A) causes Kev-0.5B to flip answers 7.41% of the time. openJev-verdict-2.0 applies symmetric KL-divergence penalties between twin option-shuffled batches during training. Across 2,918 perturbed test decisions, the flip rate drops to 4.76%, with a 90th-percentile probability spread of 0.0915 (compared to Kev's 0.2486).
+
+### 5. In-browser WebGPU execution (<600 MB)
+At 149.6M parameters, openJev-verdict-2.0 runs directly in client browser tabs through WebGPU:
+- Zero cloud inference costs
+- Zero data exfiltration: Sensitive financial records and PII stay on the user's device
+- Real-time sub-35 ms execution in Chrome and Edge
 
 <p align="center">
   <img src="assets/benchmark_breakthrough_twitter.png" alt="openJev-verdict-2.0 Highlights" width="880">
@@ -40,77 +88,48 @@ Evaluated on the held-out test split of `LocalLLaMA/typed-decisions` (N = 2,000 
 
 ---
 
-## The Five Core Architectural Breakthroughs
+## Architecture diagram
 
-### 1. 2.8x Parameter Efficiency (Base Beats Large)
-- Laya reached 76.60% accuracy using `ModernBERT-large` (421.3M parameters).
-- **openJev-verdict-2.0 achieves 77.10% accuracy and 0.0636 Brier score** using `ModernBERT-base` (**149.6M parameters**) — matching and outperforming a model with 2.8x more parameters using less than half the VRAM.
-- Fully trained in 8.8 hours on a budget consumer laptop GPU (GTX 1660 Ti, 6GB VRAM) with zero cloud clusters.
-
-### 2. Dual-Channel Calibration: Solving the Soft-Label Trap
-Soft-labeled benchmarks create an inherent mathematical dilemma:
-- Human expert panels have measured doubt (average top probability is 0.659).
-- If a model matches the panel distribution, its top probability sits near ~0.62 while its empirical accuracy is 77.10%. Evaluated against binary correctness, its calibration error explodes (**Laya's trap: Brier 0.0660, ECE 0.2140**).
-- If a model sharpens its probabilities to match accuracy, it diverges from the panel and degrades Brier loss (**Jev's trap: ECE 0.1440, Brier 0.1480**).
-- **openJev-verdict-2.0 solves this by decoupling into dual channels**:
-  - **Channel 1 (Distribution Head)**: Marker-pointer logits scoring **0.0636 Brier** (and 0.1513 distribution ECE, beating Laya's 0.2140 by 29%).
-  - **Channel 2 (Correctness Head)**: Dedicated MLP trained out-of-fold over prediction geometry (entropy, margin, cardinality), achieving **1.44% ECE (0.0144)** and **0.7664 AUROC** on 2,000 held-out test decisions.
-
-### 3. Selective Classification & Automated Gating
-The confidence head enables reliable human-in-the-loop escalation policies in deterministic software. On 2,000 held-out test decisions:
-- **At 80% coverage**: Model accuracy rises to **83.44%**.
-- **At 60% coverage**: Model accuracy reaches **89.00%**.
-- **At 50% coverage**: Model accuracy reaches **91.40%**.
-- **At 30% coverage**: Model accuracy reaches **95.17%**.
-Deterministic code can automate high-confidence decisions and escalate low-confidence uncertainty to human operators without false-positive surprises. Every curve point is reproducible via `verdict2.evaluate` and archived in `reports/verdict2_base_test.json`.
-
-### 4. Symmetric Permutation-KL (Crushing Prompt-Order Bias)
-Autoregressive decoders suffer from order bias: shuffling option order (A/B/C vs C/B/A) flips decisions frequently (Kev-0.5B: 7.41% flip rate).
-- openJev-verdict-2.0 applies symmetric KL-divergence penalties between twin option-shuffled batches during training.
-- Evaluated on 2,918 perturbed test decisions, the argmax flip rate dropped to **4.76%** (a 36% reduction), with a 90th-percentile probability spread of **0.0915** (vs Kev's 0.2486).
-
-### 5. In-Browser WebGPU Execution (<600 MB)
-Because it is an efficient 149.6M non-autoregressive encoder rather than an autoregressive LLM, openJev-verdict-2.0 runs locally in client browsers via WebGPU:
-- **Zero cloud API costs**: No tokens to pay for.
-- **Zero data exfiltration**: Private invoices, security logs, and PII never leave the client's machine.
-- **Sub-35 ms execution**: Real-time evaluation in Chrome/Edge.
+<p align="center">
+  <img src="assets/how-jev-works.png" alt="How Jev Works Architecture" width="880">
+</p>
 
 ---
 
-## Interactive Dashboard
+## Interactive dashboard
 
-Explore the interactive Pareto frontier scatter plot, KPI cards, and full metric receipts in the self-contained dashboard:
-- [Interactive Benchmark Dashboard](docs/index.html) (or via GitHub Pages at `https://heman10x-ngu.github.io/openJev-verdict-2.0/`)
+Explore the interactive Pareto frontier scatter plot, KPI tiles, and complete metric receipts in the self-contained dashboard:
+- [Interactive Benchmark Dashboard](docs/index.html) (Live on GitHub Pages: `https://heman10x-ngu.github.io/openJev-verdict-2.0/`)
 
 ---
 
 ## Quickstart
 
-### Python Usage
+### Python usage
 
 ```python
 from transformers import AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("heman10x/openJev-verdict-2.0")
 
-# Input sequence layout:
+# Sequence layout:
 # [CLS] <type> <question> [SEP] [MASK]<opt0> [MASK]<opt1> ... [SEP] <state> [SEP]
 ```
 
-### In-Browser WebGPU Playground
+### In-browser WebGPU playground
 
-1. Navigate to `webgpu-demo/`:
+1. Open `webgpu-demo/`:
 ```bash
 cd webgpu-demo
 python3 -m http.server 8080
 ```
-2. Open `http://localhost:8080` in Chrome or any WebGPU-enabled browser to test live customer service, security, and invoice decisions directly on your device.
+2. Navigate to `http://localhost:8080` in Chrome or Edge to test real customer service, security, and invoice decisions directly in your browser.
 
 ---
 
-## Citation & Upstream Credits
+## Citation and credits
 
-- Inspired by **TypeSafe AI's Jev** architecture and **RLCD (Reinforcement Learning for Calibrated Decisions)**.
+- Inspired by TypeSafe AI's Jev architecture and RLCD (Reinforcement Learning for Calibrated Decisions).
 - Base backbone: ModernBERT (`answerdotai/ModernBERT-base`).
 - Benchmark dataset: `LocalLLaMA/typed-decisions`.
 - License: Apache 2.0.

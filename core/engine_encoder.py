@@ -238,12 +238,28 @@ class DecisionEngine:
                     outputs = self.model(**tokenized_inputs)
                     raw_logits = outputs.logits  # shape: (batch_size, max_num_classes)
 
+            if raw_logits.ndim != 2:
+                raise ValueError(
+                    "Model output logits must be two-dimensional "
+                    f"[batch, candidates]; got shape {tuple(raw_logits.shape)}."
+                )
+            if raw_logits.shape[0] != len(queries):
+                raise ValueError(
+                    f"Model output batch size {raw_logits.shape[0]} does not match "
+                    f"the number of queries ({len(queries)})."
+                )
             if not torch.all(torch.isfinite(raw_logits)):
                 raise ValueError("Model output contains non-finite logits (NaN or Inf).")
 
             batch_logits = []
             for i, labels in enumerate(batch_labels):
                 num_classes = len(labels)
+                if raw_logits.shape[1] < num_classes:
+                    raise ValueError(
+                        f"Model output has {raw_logits.shape[1]} candidate logits, "
+                        f"but query {queries[i].id!r} requires {num_classes} "
+                        "(including abstention)."
+                    )
                 candidate_logits = raw_logits[i, :num_classes].float().cpu().tolist()
                 batch_logits.append(candidate_logits)
 

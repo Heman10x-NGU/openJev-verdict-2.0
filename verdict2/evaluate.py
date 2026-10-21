@@ -108,6 +108,13 @@ def main() -> None:
         raise SystemExit(1)
 
     device = pick_device(args.device)
+    with open(args.checkpoint, "rb") as checkpoint_file:
+        if checkpoint_file.read(64).startswith(b"version https://git-lfs.github.com/spec/v1"):
+            raise SystemExit(
+                f"Checkpoint {args.checkpoint!r} is a Git LFS pointer, not model weights.\n"
+                "Run 'git lfs pull' to fetch the weights. If the download returns 404, "
+                "the maintainer must restore or publish the missing checkpoint object."
+            )
     checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=False)
     backbone = checkpoint["backbone"]
 

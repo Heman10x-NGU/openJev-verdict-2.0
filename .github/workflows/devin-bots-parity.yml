@@ -1,0 +1,78 @@
+name: Devin Bots Parity & Calibration CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Nightly QA/parity sweep (02:00 UTC) and weekly Monday latency check (03:00 UTC)
+    - cron: "0 2 * * *"
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: devin-bots-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast-smoke-gate:
+    name: Fast Smoke Gate (Calibration, Formatting & Browser Contract)
+    # Guardrail: prevent bot-authored commits from re-triggering infinite CI loops
+    if: ${{ !endsWith(github.actor, '[bot]') && !startsWith(github.actor, 'devin') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install package and pytest
+        run: pip install -e ".[dev]"
+
+      - name: Run fast calibration, formatting, and browser contract parity checks
+        run: |
+          pytest -q \
+            tests/test_calibration.py \
+            tests/test_formatting.py \
+            tests/test_browser_parity.py
+
+  export-and-webgpu-gate:
+    name: Export Parity & WebGPU Demo Verification
+    needs: fast-smoke-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run PyTorch/ONNX export parity and engine tests
+        run: |
+          pytest -q \
+            tests/test_export_parity.py \
+            tests/test_engine_encoder.py \
+            tests/test_docs_fresh.py
+
+      - name: Verify WebGPU demo server and worker syntax
+        working-directory: webgpu-demo
+        run: |
+          node --check server.js
+          node --check worker.js

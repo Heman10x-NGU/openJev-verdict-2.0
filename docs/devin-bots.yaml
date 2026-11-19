@@ -1,0 +1,63 @@
+# Devin Bots multi-bot fleet specification for Heman10x-NGU/openJev-verdict-2.0
+version: 1
+repo: Heman10x-NGU/openJev-verdict-2.0
+slack_channel: "#openjev-eng"
+huggingface_checkpoint: heman10x/rlcd-modernbert-151m
+
+guardrails:
+  ignore_bot_commits: true
+  max_retries_per_sha: 2
+  pr_mode: draft_only
+  allow_push_to_main: false
+  ece_threshold: 0.015
+  fast_gate_required_before_browser_eval: true
+
+bots:
+  qa-bot:
+    role: Nightly and per-PR parity & calibration verifier
+    schedule: "0 2 * * *"
+    triggers:
+      - pull_request
+      - workflow_run: devin-bots-parity.yml
+    steps:
+      - name: fast-smoke-gate
+        command: pytest -q tests/test_calibration.py tests/test_formatting.py tests/test_browser_parity.py
+      - name: export-parity
+        command: pytest -q tests/test_export_parity.py
+      - name: webgpu-browser-check
+        command: node webgpu-demo/server.js (verified in cloud browser against webgpu-demo/presets.json)
+      - name: jevbench-eval
+        command: python verdict2/evaluate.py
+    on_failure:
+      post_to: "#openjev-eng"
+      handoff_to: dev-bot
+
+  dev-bot:
+    role: Automated fix author for parity/calibration regressions and labeled OSS issues
+    triggers:
+      - handoff: qa-bot
+      - github_issue_label: devin-ready
+    limits:
+      max_retries_per_sha: 2
+      open_pr_as: draft
+    on_retry_exhausted:
+      action: kill_run_and_pause_ticket
+      escalate_to: chief-of-staff-bot
+
+  latency-bot:
+    role: Weekly ONNX/WebGPU latency and calibration drift profiler
+    schedule: "0 3 * * 1"
+    checks:
+      - target_latency_ms: 25
+      - max_ece: 0.015
+    on_regression:
+      action: open_draft_pr_with_before_after_benchmarks
+
+  chief-of-staff-bot:
+    role: Fleet coordinator and daily Slack standup reporter
+    schedule: "0 8 * * *"
+    triggers:
+      - escalation: dev-bot
+      - draft_pr_ready_for_review
+    report_to: "#openjev-eng"
+    human_ping_policy: "Only ping @hemant when a draft PR is green for merge or paused after 2 failed retries"
